@@ -93,6 +93,10 @@ input[type=checkbox]{width:24px;height:24px;flex-shrink:0}
    onkeydown="if(event.key=='Enter')wifiIp()">
   <button class="sm g" onclick="wifiIp()">Connect WiFi</button>
  </div>
+ <div class="hide" id="iosw" style="margin-top:6px">
+  <div class="dim" id="iosnote"></div>
+  <a id="safari"><button class="sm g" style="margin-top:6px">Open in Safari</button></a>
+ </div>
 </div>
 <div id="clock">--:--</div>
 <div id="next"></div>
@@ -737,9 +741,15 @@ function wifiIp(){
  if(location.protocol=='https:'){
   prefSet('ip',ip);
   if(IOSBLE){
-   // Bluefy will not load the clock's HTTP page. x-safari- is an unofficial iOS link type.
-   msg('If Safari does not open, go to http://'+ip+'/ in Safari');
-   location.href='x-safari-http://'+ip+'/';
+   // Bluefy will not load the clock's HTTP page and ignores an automatic x-safari- redirect
+   // (an unofficial iOS link type), so offer it as a link the user taps, with a copied address.
+   let u='http://'+ip+'/';
+   $('safari').href='x-safari-'+u;
+   $('iosnote').textContent='Bluefy cannot open the WiFi page. In Safari, go to '+u;
+   $('iosw').classList.remove('hide');
+   if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>{
+    $('iosnote').textContent='Address copied: '+u+' - if the button does nothing, paste it into Safari.';
+   }).catch(()=>{});
    return;
   }
   if(!window.open('http://'+ip+'/','_blank'))
