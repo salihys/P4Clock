@@ -1,70 +1,117 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Prayer Clock Remote</title>
 <style>
+*{box-sizing:border-box}
 body{background:#0E1621;color:#E8EEF2;font-family:system-ui,sans-serif;margin:0;padding:12px}
 .w{max-width:640px;margin:auto}
-h1{font-size:22px;margin:4px 0;color:#26A69A}h2{font-size:18px;margin:0 0 8px;color:#26A69A}
+h1{font-size:22px;margin:4px 0;color:#26A69A}
+h2{font-size:18px;margin:0 0 8px;color:#26A69A}
 h3{font-size:15px;margin:14px 0 4px;color:#8A9BAE}
-#clock{color:#8A9BAE;margin:4px 0}#next{color:#FFC107;font-size:14px;min-height:18px}
+#clock{color:#8A9BAE;margin:4px 0}
+#next{color:#FFC107;font-size:14px;min-height:18px}
 .card{background:#1B2735;border-radius:14px;padding:14px;margin:12px 0}
 .row{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.row>input{min-width:0}
 button{background:#26A69A;border:0;color:#fff;font-size:18px;padding:10px 16px;border-radius:10px;min-width:56px;cursor:pointer}
-button.g{background:#37474F}button.o{background:#FB8C00}button.r{background:#E53935}button.big{font-size:24px}
-button.i{background:#3949AB}button:disabled{opacity:.5;cursor:default}
+button.g{background:#37474F}
+button.o{background:#FB8C00}
+button.r{background:#E53935}
+button.big{font-size:24px}
+button.i{background:#3949AB}
+button:disabled{opacity:.5;cursor:default}
 button.sm{font-size:14px;padding:7px 10px;min-width:0}
-input,select{background:#0E1621;color:#E8EEF2;border:1px solid #37474F;border-radius:8px;padding:8px;font-size:16px;box-sizing:border-box}
+input,select{background:#0E1621;color:#E8EEF2;border:1px solid #37474F;border-radius:8px;padding:8px;font-size:16px;max-width:100%}
 input[type=range]{flex:1;height:32px;padding:0;border:0;background:none}
-input[type=checkbox]{width:24px;height:24px}
+input[type=checkbox]{width:24px;height:24px;flex-shrink:0}
 .f{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}
-.f input:not([type=checkbox]):not([type=range]),.f select{width:58%}
+.f>span{min-width:0}
+.f input:not([type=checkbox]):not([type=range]),.f select{width:58%;min-width:0}
 #title{font-size:20px;min-height:26px;word-break:break-word}
-.dim{color:#8A9BAE;font-size:14px}.ok{color:#26A69A;font-size:14px}.prog{color:#FFC107;font-size:14px;min-height:18px;margin-top:6px}
+.dim{color:#8A9BAE;font-size:14px}
+.ok{color:#26A69A;font-size:14px}
+.prog{color:#FFC107;font-size:14px;min-height:18px;margin-top:6px;overflow-wrap:anywhere}
 .bar{height:8px;background:#37474F;border-radius:4px;margin-top:8px;overflow:hidden}
 #fill{height:100%;width:0;background:#FFC107}
 .it{display:flex;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid #37474F}
-.it span{flex:1;cursor:pointer;word-break:break-word}
+.it span{flex:1;cursor:pointer;word-break:break-word;min-width:0}
 .it.on span{color:#FFC107;font-weight:bold}
 .pt{display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #37474F;font-size:18px}
 .pt.on{color:#FFC107;font-weight:bold}
 .lst{max-height:360px;overflow-y:auto}
-#alarm{border:3px solid #FFC107}#atitle{color:#FFC107;font-size:20px}
+#alarm{border:3px solid #FFC107}
+#atitle{color:#FFC107;font-size:20px}
 #sn{border:2px solid #FB8C00;color:#FFC107}
 #err{color:#E53935;display:none}
-#msg{position:sticky;top:0;color:#FFC107;background:#0E1621;min-height:20px;z-index:3}
+#msg{position:sticky;top:0;color:#FFC107;background:#0E1621;min-height:20px;z-index:3;overflow-wrap:anywhere}
 #fbar{position:sticky;top:20px;background:#1B2735;z-index:2;padding-bottom:6px}
 #sel{background:#0E1621;border-radius:10px;padding:8px;margin-top:8px;word-break:break-all}
-#login{position:fixed;inset:0;background:#0E1621;display:none;align-items:center;justify-content:center;z-index:9}
-#blelog{background:#0E1621;text-align:left;padding:8px;border-radius:8px;height:200px;overflow-y:auto;font-family:monospace;font-size:13px}
+#login{position:fixed;inset:0;background:#0E1621;display:none;align-items:center;justify-content:center;z-index:9;padding:12px}
+#blelog{background:#0E1621;text-align:left;padding:8px;border-radius:8px;height:200px;overflow-y:auto;font-family:monospace;font-size:13px;overflow-wrap:anywhere}
 #mtcard{border:2px solid #3949AB}
+#namepreview,#namesaved{white-space:pre-line;overflow-wrap:anywhere}
 .hide{display:none!important}
 .tabs{display:flex;gap:4px;margin-bottom:12px;background:#111822;padding:6px;border-radius:12px;overflow-x:auto}
 .tab-btn{background:#1B2735;color:#8A9BAE;font-size:15px;padding:8px 12px;border-radius:8px;min-width:auto;flex:1;text-align:center;white-space:nowrap}
 .tab-btn.active{background:#26A69A;color:#fff;font-weight:bold}
-.tab-pane{display:none}.tab-pane.active{display:block}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+@media(max-width:380px){
+ body{padding:8px}
+ .card{padding:10px}
+ button{padding:9px 12px}
+ .f{gap:6px}
+ .f input:not([type=checkbox]):not([type=range]),.f select{width:54%}
+}
 </style></head><body>
-<div id="login"><div class="card" style="width:300px;text-align:center"><h2>&#128274; Enter PIN</h2>
- <input id="pin" type="password" inputmode="numeric" maxlength="8" style="width:100%;font-size:24px;text-align:center"
-  onkeydown="if(event.key=='Enter')login()">
- <div id="lmsg" class="dim" style="margin-top:8px"></div>
- <div class="row"><button onclick="login()">Unlock</button><button class="g" onclick="$('login').style.display='none'">Cancel</button></div></div></div>
+<div id="login">
+ <div class="card" style="width:300px;max-width:100%;text-align:center">
+  <h2>&#128274; Enter PIN</h2>
+  <input id="pin" type="password" inputmode="numeric" maxlength="8"
+   autocomplete="off" style="width:100%;font-size:24px;text-align:center"
+   onkeydown="if(event.key=='Enter')login()">
+  <div id="lmsg" class="dim" style="margin-top:8px"></div>
+  <div class="row">
+   <button onclick="login()">Unlock</button>
+   <button class="g" onclick="$('login').style.display='none'">Cancel</button>
+  </div>
+ </div>
+</div>
+
 <div class="w">
-<h1>&#9790; Prayer Clock</h1>
+<h1 id="heading">&#9790; Prayer Clock</h1>
 <div class="card" id="conn" style="padding:10px 14px">
  <div id="cst" class="dim">Not connected</div>
+ <div id="fwv" class="dim" style="font-size:12px"></div>
  <div class="row" style="justify-content:flex-start;margin-top:6px">
   <button class="sm" id="bbtn" onclick="bleConnect()">&#128246; Connect Bluetooth</button>
-  <button class="sm g hide" id="bdis" onclick="bleDisconnect()">Disconnect Bluetooth</button></div>
+  <button class="sm g hide" id="bdis" onclick="bleDisconnect()">Disconnect Bluetooth</button>
+ </div>
  <div class="row hide" id="iprow" style="justify-content:flex-start;margin-top:6px">
-  <input id="ip" placeholder="or WiFi: board IP, e.g. 192.168.1.50" style="flex:1" onkeydown="if(event.key=='Enter')wifiIp()">
-  <button class="sm g" onclick="wifiIp()">Connect WiFi</button></div>
+  <input id="ip" placeholder="WiFi: board IP or hostname" style="flex:1"
+   onkeydown="if(event.key=='Enter')wifiIp()">
+  <button class="sm g" onclick="wifiIp()">Connect WiFi</button>
+ </div>
 </div>
-<div id="clock">--:--</div><div id="next"></div><div id="err">Board not reachable...</div><div id="msg"></div>
+<div id="clock">--:--</div>
+<div id="next"></div>
+<div id="err">Board not reachable...</div>
+<div id="msg"></div>
 
-<div class="card" id="alarm" style="display:none"><div id="atitle"></div>
- <div class="row"><button class="o" id="snz" onclick="c('snooze')">Snooze</button><button class="r" onclick="c('stop')">&#9632; Stop</button></div></div>
-<div class="card" id="sn" style="display:none"><span id="snt"></span>
- <div class="row"><button class="r" onclick="c('nosnooze')">Cancel snooze</button></div></div>
+<div class="card" id="alarm" style="display:none">
+ <div id="atitle"></div>
+ <div class="row">
+  <button class="o" id="snz" onclick="c('snooze')">Snooze</button>
+  <button class="r" onclick="c('stop')">&#9632; Stop</button>
+ </div>
+</div>
+<div class="card" id="sn" style="display:none">
+ <span id="snt"></span>
+ <div class="row">
+  <button class="r" onclick="c('nosnooze')">Cancel snooze</button>
+ </div>
+</div>
 
 <div class="tabs">
  <button class="tab-btn active" onclick="switchTab('t-remote',this)">Remote</button>
@@ -79,568 +126,2000 @@ input[type=checkbox]{width:24px;height:24px}
 
 <div id="t-remote" class="tab-pane active">
  <div class="card">
-  <div id="title">Stopped</div><div id="time" class="dim">0:00 / 0:00</div><div class="bar"><div id="fill"></div></div>
-  <div class="row"><button class="big" onclick="c('prev')">&#9198;</button><button class="big" id="pp" onclick="c('toggle')">&#9654;</button>
-   <button class="big g" onclick="c('stop')">&#9632;</button><button class="big" onclick="c('next')">&#9197;</button></div>
-  <div class="row">&#128264;<input type="range" id="vol" min="0" max="21" oninput="vol(this.value)"><b id="vv">-</b></div>
+  <div id="title">Stopped</div>
+  <div id="time" class="dim">0:00 / 0:00</div>
+  <div class="bar"><div id="fill"></div></div>
+  <div class="row">
+   <button class="big" onclick="c('prev')">&#9198;</button>
+   <button class="big" id="pp" onclick="c('toggle')">&#9654;</button>
+   <button class="big g" onclick="c('stop')">&#9632;</button>
+   <button class="big" onclick="c('next')">&#9197;</button>
+  </div>
+  <div class="row">
+   &#128264;<input type="range" id="vol" min="0" max="21" oninput="vol(this.value)">
+   <b id="vv">-</b>
+  </div>
  </div>
  <div class="card">
-  <div class="row" style="justify-content:space-between;margin:0"><b>&#9835; Playlist (/music)</b>
-   <div><button class="g sm" onclick="openFilesTab('/music')">&#128194; Folders</button><button class="g sm" onclick="list()">&#8635;</button></div></div>
+  <div class="row" style="justify-content:space-between;margin:0">
+   <b>&#9835; Playlist (/music)</b>
+   <div>
+    <button class="g sm" onclick="openFilesTab('/music')">&#128194; Folders</button>
+    <button class="g sm" onclick="list()">&#8635;</button>
+   </div>
+  </div>
   <div id="list" class="lst"></div>
  </div>
 </div>
 
 <div id="t-pray" class="tab-pane">
- <div class="card"><h2>&#128336; Today</h2><div id="ptl"></div><div class="dim" id="phdr" style="margin-top:8px"></div></div>
- <div class="card"><h2>&#128332; Azan</h2>
+ <div class="card">
+  <h2>&#128336; Today</h2>
+  <div id="ptl"></div>
+  <div class="dim" id="phdr" style="margin-top:8px"></div>
+ </div>
+ <div class="card">
+  <h2>&#128332; Azan</h2>
   <div class="f"><span>Azan Fajr</span><input type="checkbox" id="az0"></div>
   <div class="f"><span>Azan Dhuhr</span><input type="checkbox" id="az1"></div>
   <div class="f"><span>Azan Maghrib</span><input type="checkbox" id="az2"></div>
-  <div class="f"><span>Azan sound (Dhuhr, Maghrib)</span><select id="azfile"></select></div>
   <div class="f"><span>Fajr azan sound</span><select id="azfajr"></select></div>
+  <div class="f"><span>Dhuhr azan sound</span><select id="azfile"></select></div>
+  <div class="f"><span>Maghrib azan sound</span><select id="azmag"></select></div>
   <div class="f"><span>Azan volume (0-21)</span><input type="number" id="azvol" min="0" max="21"></div>
   <div class="f"><span>Start azan early (0-500 s)</span><input type="number" id="lead" min="0" max="500"></div>
-  <div class="f"><span>Fajr angle: method default <b id="fdef"></b></span><input type="checkbox" id="fdefcb" onchange="fShow()"></div>
-  <div class="f" id="frow"><span>Custom Fajr angle (14.0 - 19.9)</span><input id="fangle" inputmode="decimal"></div>
-  <div class="f"><span>Maghrib = sunset + min (0-30)</span><input type="number" id="magh" min="0" max="30"></div>
-  <!-- [AZBG] picture on the clock screen during the azan -->
-  <div class="f"><span>Azan picture on the clock screen</span><input type="checkbox" id="azbg"></div>
-  <div class="dim">Pictures: .bin files in /images (Files tab). A name with fajr / dhuhr / maghrib is used for that azan,
-   other names for any azan. Random if there are several.</div>
-  <div class="row"><button class="sm" onclick="azTest(0)">&#9654; Test azan</button><button class="sm" onclick="azTest(1)">&#9654; Test Fajr</button>
-   <button class="sm g" onclick="c('stop')">&#9632; Stop</button></div>
-  <div class="row"><button onclick="savePray()">&#10004; Save prayer settings</button></div>
+  <div class="f">
+   <span>Fajr angle: method default <b id="fdef"></b></span>
+   <input type="checkbox" id="fdefcb" onchange="fShow()">
+  </div>
+  <div class="f" id="frow">
+   <span>Custom Fajr angle (14.0 - 19.9)</span>
+   <input id="fangle" inputmode="decimal">
+  </div>
+  <div class="f">
+   <span>Maghrib = sunset + min (0-30)</span>
+   <input type="number" id="magh" min="0" max="30">
+  </div>
+  <div class="f">
+   <span>Azan picture on the clock screen</span>
+   <input type="checkbox" id="azbg">
+  </div>
+  <div class="dim">
+   Pictures: .bin files in /images (Files tab). A name with fajr / dhuhr / maghrib
+   is used for that azan, other names for any azan. Random if there are several.
+  </div>
+  <div class="row">
+   <button class="sm" onclick="azTest(0)">&#9654; Test Fajr</button>
+   <button class="sm" onclick="azTest(1)">&#9654; Test Dhuhr</button>
+   <button class="sm" onclick="azTest(2)">&#9654; Test Maghrib</button>
+   <button class="sm g" onclick="c('stop')">&#9632; Stop</button>
+  </div>
+  <div class="row">
+   <button onclick="savePray()">&#10004; Save prayer settings</button>
+  </div>
  </div>
 </div>
 
 <div id="t-alarms" class="tab-pane">
- <div class="card"><h2>&#128276; Alarms</h2><div class="dim">Tap an alarm to edit it. <span id="acnt"></span></div>
-  <div id="alist" class="lst"></div></div>
+ <div class="card">
+  <h2>&#128276; Alarms</h2>
+  <div class="dim">Tap an alarm to edit it. <span id="acnt"></span></div>
+  <div id="alist" class="lst"></div>
+ </div>
  <div id="aed" class="card hide" style="border:2px solid #26A69A">
   <h2>Edit alarm #<span id="e_n"></span></h2>
   <div class="f"><span>Title</span><input id="e_lbl" maxlength="30" placeholder="e.g. Suhoor"></div>
-  <div class="f"><span>When</span><select id="e_mode" onchange="eShow()"><option value="-1">Fixed time</option>
-   <option value="0">Before / after Fajr</option><option value="1">Before / after Dhuhr</option><option value="2">Before / after Maghrib</option></select></div>
+  <div class="f">
+   <span>When</span>
+   <select id="e_mode" onchange="eShow()">
+    <option value="-1">Fixed time</option>
+    <option value="0">Before / after Fajr</option>
+    <option value="1">Before / after Dhuhr</option>
+    <option value="2">Before / after Maghrib</option>
+   </select>
+  </div>
   <div class="f" id="e_fix"><span>Time</span><input id="e_time" type="time"></div>
   <div id="e_rel" class="hide">
-   <div class="f"><span>Before / after</span><select id="e_dir" onchange="ePrev()"><option value="-1">Before</option><option value="1">After</option></select></div>
-   <div class="f"><span>Minutes (0-180)</span><input id="e_off" type="number" min="0" max="180" oninput="ePrev()"></div>
+   <div class="f">
+    <span>Before / after</span>
+    <select id="e_dir" onchange="ePrev()">
+     <option value="-1">Before</option><option value="1">After</option>
+    </select>
+   </div>
+   <div class="f">
+    <span>Minutes (0-180)</span>
+    <input id="e_off" type="number" min="0" max="180" oninput="ePrev()">
+   </div>
   </div>
   <div id="e_prev" class="prog"></div>
   <h3>Repeat on (none selected = ring once)</h3>
   <div class="row" style="justify-content:space-around" id="e_days"></div>
-  <div class="f"><span>Ramadan only (works with the days)</span><input type="checkbox" id="e_ram" onchange="if(this.checked)$('e_dt').checked=false;eShow()"></div>
-  <div class="f"><span>Specific date (ignores days + Ramadan)</span><input type="checkbox" id="e_dt" onchange="if(this.checked)$('e_ram').checked=false;eShow()"></div>
+  <div class="f">
+   <span>Ramadan only (works with the days)</span>
+   <input type="checkbox" id="e_ram"
+    onchange="if(this.checked)$('e_dt').checked=false;eShow()">
+  </div>
+  <div class="f">
+   <span>Specific date (ignores days + Ramadan)</span>
+   <input type="checkbox" id="e_dt"
+    onchange="if(this.checked)$('e_ram').checked=false;eShow()">
+  </div>
   <div class="f hide" id="e_daterow"><span>Date</span><input id="e_date" type="date"></div>
   <div class="f"><span>Sound (/alarms)</span><select id="e_snd"></select></div>
-  <div class="f"><span>Volume <b id="e_vl"></b></span><input type="range" id="e_vol" min="0" max="21" oninput="eVol(this.value)"></div>
-  <div class="row"><button class="sm" onclick="eTest()">&#9654; Test</button><button class="sm g" onclick="eStop()">&#9632; Stop</button></div>
-  <div class="row"><button onclick="eSave()">&#10004; Save</button><button class="g" onclick="eClose()">Cancel</button><button class="r" onclick="eDel()">&#128465; Delete</button></div>
+  <div class="f">
+   <span>Volume <b id="e_vl"></b></span>
+   <input type="range" id="e_vol" min="0" max="21" oninput="eVol(this.value)">
+  </div>
+  <div class="row">
+   <button class="sm" onclick="eTest()">&#9654; Test</button>
+   <button class="sm g" onclick="eStop()">&#9632; Stop</button>
+  </div>
+  <div class="row">
+   <button onclick="eSave()">&#10004; Save</button>
+   <button class="g" onclick="eClose()">Cancel</button>
+   <button class="r" onclick="eDel()">&#128465; Delete</button>
+  </div>
  </div>
 </div>
 
 <div id="t-loc" class="tab-pane">
- <div class="card"><h2>&#128205; Location</h2>
+ <div class="card">
+  <h2>&#128205; Location</h2>
   <div class="dim" id="loc"></div>
-  <div class="row"><input id="cq" placeholder="City name" style="flex:1" onkeydown="if(event.key=='Enter')clist()">
-   <button class="sm" onclick="clist()">&#9776; List</button><button class="sm" onclick="geo()">&#127760; Online</button></div>
-  <div id="cmsg" class="prog"></div><div id="cres" class="lst"></div>
+  <div class="row">
+   <input id="cq" placeholder="City name" style="flex:1"
+    onkeydown="if(event.key=='Enter')clist()">
+   <button class="sm" onclick="clist()">&#9776; List</button>
+   <button class="sm" onclick="geo()">&#127760; Online</button>
+  </div>
+  <div id="cmsg" class="prog"></div>
+  <div id="cres" class="lst"></div>
   <h3>Or enter it yourself</h3>
   <div class="f"><span>City name</span><input id="city" maxlength="31"></div>
   <div class="f"><span>Latitude (South -)</span><input id="lat" inputmode="decimal"></div>
   <div class="f"><span>Longitude (West -)</span><input id="lon" inputmode="decimal"></div>
   <div class="f"><span>Time zone</span><select id="tzsel" onchange="tzShow()"></select></div>
   <div class="f" id="tzrow"><span id="tzlbl"></span><input id="tzval"></div>
-  <div class="f"><span>Also save in the cities list</span><input type="checkbox" id="savecity" checked></div>
+  <div class="f">
+   <span>Also save in the cities list</span><input type="checkbox" id="savecity" checked>
+  </div>
   <div class="row"><button onclick="saveLoc()">&#10004; Save location</button></div>
  </div>
 </div>
 
 <div id="t-set" class="tab-pane">
- <div class="card"><h2>&#9881; Settings</h2>
-  <div class="f"><span>Brightness <b id="bv"></b></span><input type="range" id="bright" min="5" max="100" oninput="bri(this.value)"></div>
+ <div class="card">
+  <h2>&#9881; Settings</h2>
+
+  <div class="f">
+   <span>Clock name</span>
+   <input id="bname" maxlength="20" placeholder="P4-Clock"
+    autocomplete="off" spellcheck="false" oninput="namePreview()">
+  </div>
+  <div class="dim">
+   Up to 20 English letters, numbers, spaces and - _ .
+   Leave empty to restore the default names.
+   This setting applies to both the WiFi and Bluetooth remotes.
+  </div>
+  <div id="namepreview" class="ok" style="margin-top:8px"></div>
+  <div id="namesaved" class="dim" style="margin-top:8px"></div>
+  <div class="dim" style="margin-top:6px">
+   The new Bluetooth scan name may appear after disconnecting and scanning again.
+   Your browser may retain the old device name.
+   The router's hostname entry may update on the next WiFi connection.
+  </div>
+
+  <div class="f">
+   <span>Brightness <b id="bv"></b></span>
+   <input type="range" id="bright" min="5" max="100" oninput="bri(this.value)">
+  </div>
   <div class="f"><span>24-hour clock</span><input type="checkbox" id="h24"></div>
   <div class="f"><span>Calculation method</span><select id="method"></select></div>
-  <div class="f"><span>Hijri date adjust</span><select id="hijri"><option value="-2">-2 days</option><option value="-1">-1 day</option>
-   <option value="0">0 (Umm al-Qura)</option><option value="1">+1 day</option><option value="2">+2 days</option></select></div>
-   <div class="f"><span>Clock screen auto-lock (0-600 s, 0 = off)</span><input type="number" id="locksec" min="0" max="600"></div>
-   <div class="row"><button onclick="saveSet()">&#10004; Save settings</button></div>
+  <div class="f">
+   <span>Hijri date adjust</span>
+   <select id="hijri">
+    <option value="-2">-2 days</option>
+    <option value="-1">-1 day</option>
+    <option value="0">0 (Umm al-Qura)</option>
+    <option value="1">+1 day</option>
+    <option value="2">+2 days</option>
+   </select>
+  </div>
+  <div class="f">
+   <span>Clock screen auto-lock (0-600 s, 0 = off)</span>
+   <input type="number" id="locksec" min="0" max="600">
+  </div>
+  <div class="row">
+   <button id="setsave" onclick="saveSet()">&#10004; Save settings</button>
+  </div>
  </div>
 </div>
 
 <div id="t-wifi" class="tab-pane">
- <div class="card"><h2>&#128246; WiFi</h2>
-  <div id="wst" style="white-space:pre-line"></div><div id="wrtc" class="dim" style="margin-top:8px"></div>
-  <div class="row"><button class="sm" id="wcon" onclick="wfToggle()">Connect</button><button class="sm r" onclick="wfClear()">&#128465; Clear saved</button>
+ <div class="card">
+  <h2>&#128246; WiFi</h2>
+  <div id="wst" style="white-space:pre-line"></div>
+  <div id="wrtc" class="dim" style="margin-top:8px"></div>
+  <div class="row">
+   <button class="sm" id="wcon" onclick="wfToggle()">Connect</button>
+   <button class="sm r" onclick="wfClear()">&#128465; Clear saved</button>
    <button class="sm o" onclick="restart()">&#8635; Restart board</button>
-   <!-- [OTAWIN] same as the OTA mode button on the clock screen WiFi tab (WiFi only) -->
-   <button class="sm i hide" id="wmaint" onclick="maint()">&#128295; OTA mode</button></div>
-  <div class="f"><span>Stay connected (needed for the WiFi page + OTA)</span><input type="checkbox" id="wkeep" onchange="wfKeep(this.checked)"></div>
+   <button class="sm i hide" id="wmaint" onclick="maint()">&#128295; OTA mode</button>
+  </div>
+  <div class="f">
+   <span>Stay connected (needed for the WiFi page + OTA)</span>
+   <input type="checkbox" id="wkeep" onchange="wfKeep(this.checked)">
+  </div>
  </div>
- <div class="card"><h2>Join a network</h2>
-  <div class="row" style="justify-content:flex-start;margin:0"><button class="sm" id="wscan" onclick="wfScan()">&#8635; Scan</button></div>
+ <div class="card">
+  <h2>Join a network</h2>
+  <div class="row" style="justify-content:flex-start;margin:0">
+   <button class="sm" id="wscan" onclick="wfScan()">&#8635; Scan</button>
+  </div>
   <div id="wl" class="lst"></div>
   <div class="f"><span>Network</span><input id="wssid" placeholder="tap a network or type it"></div>
-  <div class="f"><span>Password</span><input id="wpass" type="password"></div>
-  <div class="f"><span>Show password</span><input type="checkbox" onchange="$('wpass').type=this.checked?'text':'password'"></div>
+  <div class="f"><span>Password</span><input id="wpass" type="password" autocomplete="off"></div>
+  <div class="f">
+   <span>Show password</span>
+   <input type="checkbox" onchange="$('wpass').type=this.checked?'text':'password'">
+  </div>
   <div class="row"><button onclick="wfJoin()">&#10004; Join network</button></div>
   <div class="dim">The network is saved after a successful connection.</div>
  </div>
 </div>
 
 <div id="t-files" class="tab-pane">
- <div class="card"><h2>&#128190; SD card files</h2>
-  <div class="dim">Tap &#11015; next to a file to save it on this phone / PC. Tap a file name for Play, Copy, Rename, Delete.</div>
+ <div class="card">
+  <h2>&#128190; SD card files</h2>
+  <div class="dim">
+   Tap &#11015; next to a file to save it on this phone / PC.
+   Tap a file name for Play, Copy, Rename, Delete.
+  </div>
   <div id="fbar">
    <div class="row" style="justify-content:flex-start;margin:0">
-    <button class="g sm" onclick="fsl(up(cwd))">&#11014; Up</button><button class="g sm" onclick="fsl(cwd);fsinfo()">&#8635;</button>
-    <button class="sm" onclick="mkd()">+ Folder</button><button class="sm" onclick="$('upf').click()">&#11014; Upload files</button>
-    <button class="o sm hide" id="paste" onclick="paste()">Paste</button><button class="r sm hide" id="upc" onclick="upCancel()">Cancel</button></div>
-   <div style="margin-top:6px"><b id="cwd">/</b><span id="space" class="dim"></span></div>
-   <div id="sel" class="hide">Selected: <b id="seln"></b>
+    <button class="g sm" onclick="fsl(up(cwd))">&#11014; Up</button>
+    <button class="g sm" onclick="fsl(cwd);fsinfo()">&#8635;</button>
+    <button class="sm" onclick="mkd()">+ Folder</button>
+    <button class="sm" onclick="$('upf').click()">&#11014; Upload files</button>
+    <button class="o sm hide" id="paste" onclick="paste()">Paste</button>
+    <button class="r sm hide" id="upc" onclick="upCancel()">Cancel</button>
+   </div>
+   <div style="margin-top:6px">
+    <b id="cwd">/</b><span id="space" class="dim"></span>
+   </div>
+   <div id="sel" class="hide">
+    Selected: <b id="seln"></b>
     <div class="row" style="justify-content:flex-start">
-     <button class="sm" id="bplay" onclick="fplay()">&#9654; Play</button><button class="sm" id="bdl" onclick="fdl()">&#11015; Download</button>
-     <button class="g sm" onclick="clipSet(0)">Copy</button><button class="g sm" onclick="clipSet(1)">Cut</button>
-     <button class="g sm" onclick="fren()">Rename</button><button class="r sm" onclick="fdel()">Delete</button>
-     <button class="g sm" onclick="selSet(null)">&#10005;</button></div></div>
+     <button class="sm" id="bplay" onclick="fplay()">&#9654; Play</button>
+     <button class="sm" id="bdl" onclick="fdl()">&#11015; Download</button>
+     <button class="g sm" onclick="clipSet(0)">Copy</button>
+     <button class="g sm" onclick="clipSet(1)">Cut</button>
+     <button class="g sm" onclick="fren()">Rename</button>
+     <button class="r sm" onclick="fdel()">Delete</button>
+     <button class="g sm" onclick="selSet(null)">&#10005;</button>
+    </div>
+   </div>
    <div id="up" class="prog"></div>
   </div>
-  <input type="file" id="upf" multiple class="hide" onchange="upl([...this.files]);this.value=''">
+  <input type="file" id="upf" multiple class="hide"
+   onchange="upl([...this.files]);this.value=''">
   <div id="fl" class="lst" style="max-height:480px"></div>
  </div>
 </div>
 
 <div id="t-sys" class="tab-pane">
- <div class="card"><h2>&#128274; PIN and clock</h2>
-  <div class="f"><span>New PIN (4-8 digits, empty = no PIN)</span><input id="np" type="password" inputmode="numeric" maxlength="8"></div>
-  <div class="row"><button onclick="setPin()">Set PIN</button><button class="g" onclick="setTime()">&#128339; Set board clock from this phone</button></div>
-  <div class="row"><button class="g" onclick="logout()">Lock this page</button><button class="o" onclick="restart()">&#8635; Restart board</button></div>
+ <div class="card">
+  <h2>&#128274; PIN and clock</h2>
+  <div class="f">
+   <span>New PIN (4-8 digits, empty = no PIN)</span>
+   <input id="np" type="password" inputmode="numeric" maxlength="8" autocomplete="off">
+  </div>
+  <div class="row">
+   <button onclick="setPin()">Set PIN</button>
+   <button class="g" onclick="setTime()">&#128339; Set board clock from this phone</button>
+  </div>
+  <div class="row">
+   <button class="g" onclick="logout()">Lock this page</button>
+   <button class="o" onclick="restart()">&#8635; Restart board</button>
+  </div>
+  <div class="dim" style="margin-top:8px">
+   The PIN is retained only while this page is open.
+   Lock this page to clear the current login.
+  </div>
  </div>
- <div class="card" id="otacard"><h2>&#11014; Firmware update (OTA, WiFi only)</h2>
-  <div class="dim">PlatformIO: .pio/build/&lt;env&gt;/firmware.bin. Settings and SD card files are kept.</div>
-  <div class="row"><input type="file" id="fw" accept=".bin" style="flex:1"><button class="o" onclick="ota()">Install</button></div>
+ <div class="card" id="otacard">
+  <h2>&#11014; Firmware update (OTA, WiFi only)</h2>
+  <div class="dim">
+   PlatformIO: .pio/build/&lt;env&gt;/firmware.bin.
+   Settings and SD card files are kept.
+  </div>
+  <div class="row">
+   <input type="file" id="fw" accept=".bin" style="flex:1">
+   <button class="o" onclick="ota()">Install</button>
+  </div>
   <div id="otas" class="prog"></div>
   <h3>Offline Bluetooth page</h3>
-  <div class="dim">Save this page on your phone / PC to control the clock over Bluetooth without WiFi.</div>
-  <div class="row"><a id="dlpage" href="/p4clock.html" download="p4clock.html"><button class="g sm">&#11015; Download p4clock.html</button></a></div>
+  <div class="dim">
+   Save this page to control the clock over Bluetooth without WiFi,
+   using a browser that supports Web Bluetooth.
+   Opening a saved file is browser/platform dependent.
+   If necessary, use a trusted HTTPS host or localhost.
+  </div>
+  <div class="row">
+   <a id="dlpage" href="/p4clock.html" download="p4clock.html">
+    <button class="g sm">&#11015; Download p4clock.html</button>
+   </a>
+  </div>
  </div>
- <!-- [OTAWIN] restart in maintenance mode (WiFi only) -->
- <div class="card hide" id="mtcard"><h2>&#128295; Maintenance mode (WiFi only)</h2>
-  <div class="dim">The clock restarts into a small maintenance page for firmware updates and SD card files.
+ <div class="card hide" id="mtcard">
+  <h2>&#128295; Maintenance mode (WiFi only)</h2>
+  <div class="dim">
+   The clock restarts into a small maintenance page for firmware updates and SD card files.
    The clock, alarms and azan pause until you restart it normally from that page.
-   Use it if the normal update above fails.</div>
-  <div class="row"><button class="i" id="mtbtn" onclick="maint()">&#128295; Restart in maintenance mode</button></div>
+   Use it if the normal update above fails.
+  </div>
+  <div class="row">
+   <button class="i" id="mtbtn" onclick="maint()">&#128295; Restart in maintenance mode</button>
+  </div>
   <div id="mts" class="prog"></div>
  </div>
- <div class="card hide" id="concard"><h2>&#128421; Bluetooth console</h2>
-  <div class="dim">Text commands - type help</div>
-  <div class="row"><input id="bcmd" style="flex:1" placeholder="e.g. help, ls, status" onkeydown="if(event.key=='Enter')conSend()"><button class="sm" onclick="conSend()">Send</button>
-   <button class="sm g" onclick="$('blelog').innerHTML=''">Clear</button></div>
+ <div class="card" id="vdcard">
+  <h2>&#127909; Video mode</h2>
+  <div class="dim">
+   The clock restarts into a video player for the videos in /video on the SD card (made with convert_video.bat).
+   Control it on the clock screen or from its own web page. It goes back to the clock by itself before the next azan or alarm.
+  </div>
+  <div class="row">
+   <button class="i" id="vdbtn" onclick="vmode()">&#127909; Restart in video mode</button>
+  </div>
+  <div id="vds" class="prog"></div>
+ </div>
+ <div class="card hide" id="concard">
+  <h2>&#128421; Bluetooth console</h2>
+  <div class="dim">Text commands - type help. Protected commands may require pin followed by your PIN.</div>
+  <div class="row">
+   <input id="bcmd" style="flex:1" placeholder="e.g. help, ls, status"
+    onkeydown="if(event.key=='Enter')conSend()">
+   <button class="sm" onclick="conSend()">Send</button>
+   <button class="sm g" onclick="$('blelog').innerHTML=''">Clear</button>
+  </div>
   <div id="blelog" style="margin-top:8px"></div>
  </div>
 </div>
 </div>
 
 <script>
+'use strict';
+
 const $=i=>document.getElementById(i);
-const SVC='6e400001-b5a3-f393-e0a9-e50e24dcca9e',RXU='6e400002-b5a3-f393-e0a9-e50e24dcca9e',TXU='6e400003-b5a3-f393-e0a9-e50e24dcca9e';
-const ONBOARD=location.protocol=='http:';
-const PN=['Fajr','Sunrise','Dhuhr','Sunset','Maghrib'],AZPT=[0,2,4],DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const SVC='6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+const RXU='6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+const TXU='6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+
+// The clock only serves plain HTTP, so an HTTPS page is a hosted copy, not the board.
+// Local development servers should not be mistaken for the clock itself.
+const LOOPBACK=['localhost','127.0.0.1','[::1]'].includes(location.hostname);
+const ONBOARD=location.protocol=='http:'&&!LOOPBACK;
+const PN=['Fajr','Sunrise','Dhuhr','Sunset','Maghrib'];
+const AZPT=[0,2,4];
+const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const AUD=/\.(mp3|m4a|aac|wav|flac|ogg)$/i;
-let MODE='',BASE='',P=localStorage.getItem('pin')||'',ready=0,busy=0,drag=0,vt=0,bt=0,et=0,cur=-1,keep0=1,ntz=0;
-let cwd='/',sel=null,selDir=0,clip=null,gq='',gt=0,wt=0,fsDone=0,upStop=0,dlBusy=0,upBusy=0,fsz={};
-let rawAlarms=[],lastCfg=null,cfgBusy=0,setD=null,lastSt=null,METH=[],MANG=[],TZS=[],dirty={},eIdx=-1,ptKey='';
-let mtGo=0;   // [OTAWIN] 1 = the board is restarting in maintenance mode (status polling stops)
+
+function prefGet(k){
+ try{return localStorage.getItem(k)||''}catch(e){return ''}
+}
+function prefSet(k,v){
+ try{localStorage.setItem(k,v)}catch(e){}
+}
+function prefRemove(k){
+ try{localStorage.removeItem(k)}catch(e){}
+}
+
+// Remove PINs persisted by older versions of this page.
+prefRemove('pin');
+
+let MODE='',BASE='',P='',ready=0,busy=0,drag=0,vt=0,bt=0,et=0;
+let cur=-1,keep0=1,ntz=0;
+let cwd='/',sel=null,selDir=0,clip=null,gq='',gt=0,wt=0,fsDone=0;
+let upStop=0,dlBusy=0,upBusy=0,fsz={};
+let rawAlarms=[],lastCfg=null,cfgBusy=0,setD=null,lastSt=null;
+let METH=[],MANG=[],TZS=[],dirty={},eIdx=-1,ptKey='';
+let mtGo=0;
+let connectionEpoch=0;
+let setSaving=0;
+let fwBusy=0;
+let boardBleName='P4-Clock';
 
 function p2(n){return (n<10?'0':'')+n}
-function hm(m){if(m==null||m<0)return'--:--';let h=Math.floor(m/60),x=m%60;
- if(setD&&!setD.h24)return (h%12||12)+':'+p2(x)+(h<12?' AM':' PM');return p2(h)+':'+p2(x)}
-function f(s){s=s|0;let h=Math.floor(s/3600),m=Math.floor(s/60)%60,x=s%60;return (h?h+':'+(m<10?'0':''):'')+m+':'+p2(x)}
-function sz(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':b<1073741824?(b/1048576).toFixed(1)+' MB':(b/1073741824).toFixed(2)+' GB'}
+
+function hm(m){
+ if(m==null||m<0)return '--:--';
+ let h=Math.floor(m/60),x=m%60;
+ if(setD&&!setD.h24)return (h%12||12)+':'+p2(x)+(h<12?' AM':' PM');
+ return p2(h)+':'+p2(x);
+}
+
+function f(s){
+ s=Math.max(0,Number(s)||0);
+ let h=Math.floor(s/3600),m=Math.floor(s/60)%60,x=Math.floor(s)%60;
+ return (h?h+':'+(m<10?'0':''):'')+m+':'+p2(x);
+}
+
+function sz(b){
+ return b<1024?b+' B':
+  b<1048576?(b/1024).toFixed(1)+' KB':
+  b<1073741824?(b/1048576).toFixed(1)+' MB':
+  (b/1073741824).toFixed(2)+' GB';
+}
+
 function J(a,b){return (a=='/'?'':a)+'/'+b}
 function up(p){let i=p.lastIndexOf('/');return i<=0?'/':p.slice(0,i)}
 function bn(p){return String(p).slice(String(p).lastIndexOf('/')+1)}
-function msg(t){$('msg').textContent=t;setTimeout(()=>{if($('msg').textContent==t)$('msg').textContent=''},6000)}
-function conn(t,ok){$('cst').textContent=t;$('cst').className=ok?'ok':'dim'}
-function modeUi(){let b=MODE=='ble';
- $('bdis').classList.toggle('hide',!b);$('bbtn').classList.toggle('hide',b);
- $('iprow').classList.toggle('hide',ONBOARD);
- $('otacard').classList.toggle('hide',MODE!='wifi');$('concard').classList.toggle('hide',!b);
- $('mtcard').classList.toggle('hide',MODE!='wifi');$('wmaint').classList.toggle('hide',MODE!='wifi');   // [OTAWIN]
- if(MODE=='wifi')$('dlpage').href=BASE+'/p4clock.html'}
 
-// ---------- transport: WiFi (fetch) or Bluetooth (JSON lines)
-function api(p,a,post){a=Object.assign({},a||{});a.pin=P;for(let k in a)a[k]=String(a[k]);
+function msg(t){
+ $('msg').textContent=t;
+ setTimeout(()=>{if($('msg').textContent==t)$('msg').textContent=''},6000);
+}
+
+function conn(t,ok){
+ $('cst').textContent=t;
+ $('cst').className=ok?'ok':'dim';
+}
+
+function modeUi(){
+ let b=MODE=='ble';
+ $('bdis').classList.toggle('hide',!b);
+ $('bbtn').classList.toggle('hide',b);
+ $('iprow').classList.toggle('hide',ONBOARD);
+ $('otacard').classList.toggle('hide',MODE!='wifi');
+ $('concard').classList.toggle('hide',!b);
+ $('mtcard').classList.toggle('hide',MODE!='wifi');
+ $('wmaint').classList.toggle('hide',MODE!='wifi');
+ if(MODE=='wifi')$('dlpage').href=BASE+'/p4clock.html';
+}
+
+function resetConnectionData(){
+ connectionEpoch++;
+ ready=0;
+ lastCfg=null;
+ lastSt=null;
+ setD=null;
+ METH=[];
+ MANG=[];
+ TZS=[];
+ ntz=0;
+ dirty={};
+ ptKey='';
+ fsDone=0;
+ rawAlarms=[];
+ eIdx=-1;
+ $('aed').classList.add('hide');
+ $('method').innerHTML='';
+ $('tzsel').innerHTML='';
+ clearTimeout(gt);
+ clearTimeout(wt);
+ clearTimeout(vt);
+ clearTimeout(bt);
+ clearTimeout(et);
+}
+
+// ---------- clock name
+
+function validClockName(n){
+ return n.length<=20&&(!n.length||(
+  /^[A-Za-z0-9 _.-]+$/.test(n)&&/[A-Za-z0-9]/.test(n)
+ ));
+}
+
+function hostForName(n){
+ let h=n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+ return h||(setD&&setD.defhost)||'prayerclock';
+}
+
+function namePreview(){
+ let n=$('bname').value.trim();
+ let good=validClockName(n);
+ $('namepreview').className=good?'ok':'prog';
+ if(!good){
+  $('namepreview').textContent=
+   'Use up to 20 English letters, numbers, spaces and - _ . Include a letter or number.';
+  return;
+ }
+ let ble=n||(setD&&setD.defble)||'P4-Clock';
+ $('namepreview').textContent=
+  'Bluetooth: '+ble+'\nWiFi: http://'+hostForName(n)+'.local/';
+}
+
+function nameSaved(d){
+ let ble=d.ble||d.bname||d.defble||'P4-Clock';
+ let host=d.host||hostForName(d.bname||'');
+ boardBleName=ble;
+ $('heading').textContent='\u263E '+(d.bname||'Prayer Clock');
+ document.title=(d.bname||'Prayer Clock')+' Remote';
+ $('namesaved').textContent=
+  'Saved Bluetooth name: '+ble+'\nSaved WiFi address: http://'+host+'.local/';
+ if(MODE=='ble')conn('Bluetooth: connected to '+ble,1);
+}
+
+// ---------- transport
+
+function api(p,a,post){
+ a=Object.assign({},a||{});
+ a.pin=P;
+ for(let k in a)a[k]=String(a[k]);
+
+ const epoch=connectionEpoch;
  let pr;
- if(MODE=='ble')pr=bleReq(p,a,post);
- else if(MODE=='wifi'){let q=new URLSearchParams(a);
-  pr=fetch(BASE+(post?p:p+'?'+q),post?{method:'POST',body:q}:{}).then(r=>r.json().then(d=>({s:r.status,d:d})))}
- else return Promise.reject(0);
- return pr.then(r=>{if(r.s==401){lock(P?'Wrong PIN':'');throw 0}
-  if(r.s==429){lock('Too many wrong PINs - wait 1 minute');throw 0}return r.d})}
-function lock(m){ready=0;$('login').style.display='flex';$('lmsg').textContent=m||'';$('pin').focus()}
-function auth(){return api('/api/auth').then(start).catch(()=>{})}
-function login(){P=$('pin').value.trim();api('/api/auth').then(()=>{localStorage.setItem('pin',P);$('login').style.display='none';start()}).catch(()=>{})}
-function logout(){localStorage.removeItem('pin');P='';lock('')}
-function wifiIp(){let ip=$('ip').value.trim().replace(/^https?:\/\//,'').replace(/\/+$/,'');if(!ip)return;
- if(location.protocol=='https:'){msg('WiFi does not work from an HTTPS page - open the saved file, or http://'+ip+'/');return}
- let wasBle=MODE=='ble';localStorage.setItem('ip',ip);BASE='http://'+ip;MODE='wifi';
- if(wasBle){bManual=1;if(bDev&&bDev.gatt.connected)bDev.gatt.disconnect()}
- conn('WiFi: '+BASE,1);modeUi();auth()}
+
+ if(MODE=='ble'){
+  pr=bleReq(p,a,post);
+ }else if(MODE=='wifi'){
+  let q=new URLSearchParams(a);
+  pr=fetch(BASE+(post?p:p+'?'+q),
+   post?{method:'POST',body:q,cache:'no-store'}:{cache:'no-store'})
+   .then(r=>r.json().then(d=>({s:r.status,d:d})));
+ }else{
+  return Promise.reject(0);
+ }
+
+ return pr.then(r=>{
+  if(epoch!==connectionEpoch)throw 0;
+  if(r.s==401){
+   lock(P?'Wrong PIN':'');
+   throw 0;
+  }
+  if(r.s==429){
+   lock('Too many wrong PINs - wait 1 minute');
+   throw 0;
+  }
+  if(r.s<200||r.s>=300)throw new Error((r.d&&r.d.err)||('HTTP '+r.s));
+  return r.d;
+ });
+}
+
+function lock(m){
+ ready=0;
+ clearTimeout(vt);
+ clearTimeout(bt);
+ clearTimeout(et);
+ clearTimeout(wt);
+ clearTimeout(gt);
+ $('login').style.display='flex';
+ $('lmsg').textContent=m||'';
+ $('pin').focus();
+}
+
+function auth(){
+ return api('/api/auth').then(d=>{
+  if(d.ok){
+   $('login').style.display='none';
+   start();
+  }
+ }).catch(()=>{});
+}
+
+function login(){
+ P=$('pin').value.trim();
+ api('/api/auth').then(d=>{
+  if(!d.ok)return;
+  $('pin').value='';
+  $('login').style.display='none';
+  start();
+ }).catch(()=>{});
+}
+
+function logout(){
+ if(upBusy||dlBusy||fwBusy){
+  msg('Finish or cancel the transfer before locking this page');
+  return;
+ }
+ P='';
+ $('pin').value='';
+ $('np').value='';
+ lock('');
+}
+
+function wifiIp(){
+ if(upBusy||dlBusy||fwBusy){
+  msg('Finish or cancel the transfer before changing connection');
+  return;
+ }
+ let ip=$('ip').value.trim().replace(/^https?:\/\//,'').replace(/\/+$/,'');
+ if(!ip)return;
+ if(!/^[A-Za-z0-9._:-]+$/.test(ip)){
+  msg('Enter only the board IP address or hostname');
+  return;
+ }
+ if(location.protocol=='https:'){
+  msg('An HTTPS page may block plain HTTP WiFi access. Open http://'+ip+'/ directly.');
+  return;
+ }
+ if(bDev&&bDev.gatt.connected){
+  bManual=1;
+  bDev.gatt.disconnect();
+ }
+ resetConnectionData();
+ prefSet('ip',ip);
+ BASE='http://'+ip;
+ MODE='wifi';
+ conn('WiFi: '+BASE,1);
+ modeUi();
+ auth();
+}
+
 // Over Bluetooth, show the board's WiFi IP in the box (empty when it is not on WiFi)
-// and remember it so it is still there after disconnecting or reopening the page
-function ipFill(){if(MODE!='ble')return;api('/api/wifi').then(d=>{let ip=d.ip||'';
- if(ip)localStorage.setItem('ip',ip);else localStorage.removeItem('ip');
- if(document.activeElement!=$('ip'))$('ip').value=ip}).catch(()=>{})}
+// and remember it so it is still there after disconnecting or reopening the page.
+function ipFill(){
+ if(MODE!='ble'||!ready)return;
+ api('/api/wifi').then(d=>{
+  let ip=d.ip||'';
+  if(ip)prefSet('ip',ip);else prefRemove('ip');
+  if(document.activeElement!=$('ip'))$('ip').value=ip;
+ }).catch(()=>{});
+}
 
 // ---------- Bluetooth
-let bDev=null,bRx=null,bTx=null,bBuf='',bId=0,bWait={},bQ=Promise.resolve(),bChunk=20,bDec=null,bManual=0,lastWifi=null;
+
+let bDev=null,bRx=null,bTx=null,bBuf='',bId=0,bWait={};
+let bQ=Promise.resolve(),bChunk=20,bDec=null,bManual=0,lastWifi=null;
+let bRetryTimer=0,bOpening=0,bConnectBusy=0;
+
 async function bleConnect(){
- if(!navigator.bluetooth){msg(ONBOARD?'Bluetooth does not work on this http page - System tab: download p4clock.html and open that file':
-  'This browser has no Web Bluetooth - use Chrome / Edge, or Bluefy on iPhone');return}
- try{bManual=0;
-  bDev=await navigator.bluetooth.requestDevice({filters:[{services:[SVC]},{namePrefix:'P4-Clock'}],optionalServices:[SVC]});
+ if(bConnectBusy)return;
+ if(upBusy||dlBusy||fwBusy){
+  msg('Finish or cancel the transfer before changing connection');
+  return;
+ }
+ if(!navigator.bluetooth){
+  msg(!window.isSecureContext?
+   'Web Bluetooth needs a secure context and a supported browser. Use a trusted HTTPS host, localhost, or a supported saved-file workflow.':
+   'This browser does not expose Web Bluetooth. Try a supported browser/platform.');
+  return;
+ }
+ bConnectBusy=1;
+ try{
+  bManual=0;
+  clearTimeout(bRetryTimer);
+  if(bDev&&bDev.gatt.connected){
+   bManual=1;
+   bDev.gatt.disconnect();
+  }
+  let dev=await navigator.bluetooth.requestDevice({
+   filters:[{services:[SVC]}],
+   optionalServices:[SVC]
+  });
+  if(bDev)bDev.removeEventListener('gattserverdisconnected',bleLost);
+  bDev=dev;
   bDev.addEventListener('gattserverdisconnected',bleLost);
+  bManual=0;
+  resetConnectionData();
   await bleOpen();
- }catch(e){if(MODE=='ble')MODE='';modeUi();conn('Bluetooth: '+(e.message||e))}}
+ }catch(e){
+  if(MODE=='ble')MODE='';
+  modeUi();
+  conn('Bluetooth: '+(e.message||e));
+ }finally{
+  bConnectBusy=0;
+ }
+}
+
 async function bleOpen(){
- conn('Connecting Bluetooth...');
- let g=await bDev.gatt.connect(),sv=await g.getPrimaryService(SVC);
- bRx=await sv.getCharacteristic(RXU);
- if(bTx)bTx.removeEventListener('characteristicvaluechanged',bleData);
- bTx=await sv.getCharacteristic(TXU);
- bTx.addEventListener('characteristicvaluechanged',bleData);
- await bTx.startNotifications();
- bBuf='';bDec=new TextDecoder();bQ=Promise.resolve();bChunk=20;MODE='ble';BASE='';
- let h=await bleReq('/api/hello',{},0),mtu=(h.d&&h.d.mtu)||23;
- bChunk=Math.max(20,Math.min(240,mtu-3));
- conn('Bluetooth: connected to '+(bDev.name||'P4-Clock')+'  (MTU '+mtu+')',1);
- modeUi();auth()}
-function bleLost(){bRx=null;for(let k in bWait)bWait[k].rej('lost');bWait={};
- if(MODE!='ble')return;ready=0;
- if(bManual){MODE='';modeUi();conn('Bluetooth disconnected');return}
- conn('Bluetooth lost - reconnecting...');bleRetry(1)}
-function bleRetry(n){setTimeout(()=>bleOpen().catch(()=>{if(n<5&&MODE=='ble'&&!bManual)bleRetry(n+1);
- else{MODE='';modeUi();conn('Bluetooth lost - press Connect Bluetooth')}}),2000)}
-function bleDisconnect(){bManual=1;ready=0;if(bDev&&bDev.gatt.connected)bDev.gatt.disconnect();MODE='';modeUi();conn('Bluetooth disconnected')}
-function bleData(e){bBuf+=bDec.decode(e.target.value,{stream:true});let i;
- while((i=bBuf.indexOf('\n'))>=0){let l=bBuf.slice(0,i).replace(/\r$/,'');bBuf=bBuf.slice(i+1);if(l)bleLine(l)}}
-function bleLine(l){if(l[0]=='{'){let o;try{o=JSON.parse(l)}catch(e){con('<< '+l);return}
-  if(o.id&&bWait[o.id]){let w=bWait[o.id];delete bWait[o.id];w.res(o);return}
-  if(o.ev=='status'){if(ready)applyStatus(o.d);return}}
- con('<< '+l)}
-async function bleWrite(s){let b=new TextEncoder().encode(s);
- for(let i=0;i<b.length;i+=bChunk){let x=b.slice(i,i+bChunk);
-  if(bRx.writeValueWithResponse)await bRx.writeValueWithResponse(x);else await bRx.writeValue(x)}}
+ if(bOpening)throw new Error('Connection already in progress');
+ if(bManual||!bDev)throw new Error('Connection cancelled');
+ bOpening=1;
+ try{
+  conn('Connecting Bluetooth...');
+  let g=await bDev.gatt.connect();
+  let sv=await g.getPrimaryService(SVC);
+  bRx=await sv.getCharacteristic(RXU);
+  if(bTx)bTx.removeEventListener('characteristicvaluechanged',bleData);
+  bTx=await sv.getCharacteristic(TXU);
+
+  // Initialise decoding before notifications can arrive.
+  bBuf='';
+  bDec=new TextDecoder();
+  bQ=Promise.resolve();
+  bChunk=20;
+  bTx.addEventListener('characteristicvaluechanged',bleData);
+  await bTx.startNotifications();
+
+  if(bManual){
+   bDev.gatt.disconnect();
+   throw new Error('Connection cancelled');
+  }
+  MODE='ble';
+  BASE='';
+  let h=await bleReq('/api/hello',{},0);
+  let mtu=(h.d&&h.d.mtu)||23;
+  bChunk=Math.max(20,Math.min(240,mtu-3));
+  boardBleName=(h.d&&h.d.name)||bDev.name||'P4-Clock';
+  conn('Bluetooth: connected to '+boardBleName+' (MTU '+mtu+')',1);
+  modeUi();
+  await auth();
+ }finally{
+  bOpening=0;
+ }
+}
+
+function rejectBleRequests(reason){
+ for(let k in bWait)bWait[k].rej(reason);
+ bWait={};
+}
+
+function bleLost(){
+ bRx=null;
+ bBuf='';
+ rejectBleRequests('Bluetooth disconnected');
+ if(MODE!='ble')return;
+ ready=0;
+ connectionEpoch++;
+ if(bManual){
+  MODE='';
+  modeUi();
+  conn('Bluetooth disconnected');
+  return;
+ }
+ conn('Bluetooth lost - reconnecting...');
+ bleRetry(1);
+}
+
+function bleRetry(n){
+ clearTimeout(bRetryTimer);
+ bRetryTimer=setTimeout(()=>{
+  if(MODE!='ble'||bManual)return;
+  bleOpen().catch(()=>{
+   if(n<5&&MODE=='ble'&&!bManual)bleRetry(n+1);
+   else{
+    MODE='';
+    modeUi();
+    conn('Bluetooth lost - press Connect Bluetooth');
+   }
+  });
+ },2000);
+}
+
+function bleDisconnect(){
+ if(upBusy||dlBusy){
+  msg('Finish or cancel the transfer before disconnecting');
+  return;
+ }
+ bManual=1;
+ clearTimeout(bRetryTimer);
+ ready=0;
+ connectionEpoch++;
+ rejectBleRequests('Bluetooth disconnected');
+ if(bDev&&bDev.gatt.connected)bDev.gatt.disconnect();
+ bRx=null;
+ MODE='';
+ modeUi();
+ conn('Bluetooth disconnected');
+}
+
+function bleData(e){
+ if(!bDec)return;
+ bBuf+=bDec.decode(e.target.value,{stream:true});
+ let i;
+ while((i=bBuf.indexOf('\n'))>=0){
+  let l=bBuf.slice(0,i).replace(/\r$/,'');
+  bBuf=bBuf.slice(i+1);
+  if(l)bleLine(l);
+ }
+ // Bound incomplete or malformed incoming lines.
+ if(bBuf.length>262144){
+  bBuf='';
+  rejectBleRequests('Bluetooth reply exceeded receive limit');
+  msg('Invalid oversized Bluetooth reply');
+ }
+}
+
+function bleLine(l){
+ if(l[0]=='{'){
+  let o;
+  try{o=JSON.parse(l)}catch(e){con('<< '+l);return}
+  if(o.id&&bWait[o.id]){
+   let w=bWait[o.id];
+   delete bWait[o.id];
+   w.res(o);
+   return;
+  }
+  if(o.ev=='status'){
+   if(ready)applyStatus(o.d);
+   return;
+  }
+ }
+ con('<< '+l);
+}
+
+async function bleWrite(s){
+ const rx=bRx;
+ if(!rx)throw new Error('Bluetooth not connected');
+ let b=new TextEncoder().encode(s);
+ for(let i=0;i<b.length;i+=bChunk){
+  if(rx!==bRx)throw new Error('Bluetooth connection changed');
+  let x=b.slice(i,i+bChunk);
+  if(rx.writeValueWithResponse)await rx.writeValueWithResponse(x);
+  else await rx.writeValue(x);
+ }
+}
+
 function bleReq(p,a,post,tmo){
+ const epoch=connectionEpoch;
  let run=()=>new Promise((res,rej)=>{
-  if(!bRx){rej('not connected');return}
-  let id=++bId,t=setTimeout(()=>{delete bWait[id];rej('timeout')},tmo||120000);
-  bWait[id]={res:o=>{clearTimeout(t);res(o)},rej:e=>{clearTimeout(t);rej(e)}};
-  bleWrite(JSON.stringify({id:id,p:p,m:post?1:0,a:a})+'\n').catch(e=>{let w=bWait[id];if(w){delete bWait[id];w.rej(e)}})});
- let r=bQ.then(run,run);bQ=r.catch(()=>{});return r}
-function con(t){let l=$('blelog');let e=document.createElement('div');e.textContent=t;l.appendChild(e);
- while(l.childNodes.length>300)l.removeChild(l.firstChild);l.scrollTop=l.scrollHeight}
-function conSend(){let v=$('bcmd').value.trim();if(!v||MODE!='ble')return;$('bcmd').value='';con('>> '+v);
- bQ=bQ.then(()=>bleWrite(v+'\n')).catch(()=>{})}
+  if(!bRx||epoch!==connectionEpoch){rej('not connected');return}
+  let id=++bId;
+  let t=setTimeout(()=>{delete bWait[id];rej('timeout')},tmo||120000);
+  bWait[id]={
+   res:o=>{clearTimeout(t);res(o)},
+   rej:e=>{clearTimeout(t);rej(e)}
+  };
+  bleWrite(JSON.stringify({id:id,p:p,m:post?1:0,a:a})+'\n').catch(e=>{
+   let w=bWait[id];
+   if(w){delete bWait[id];w.rej(e)}
+  });
+ });
+ let r=bQ.then(run,run);
+ bQ=r.catch(()=>{});
+ return r;
+}
+
+function con(t){
+ let l=$('blelog'),e=document.createElement('div');
+ e.textContent=t;
+ l.appendChild(e);
+ while(l.childNodes.length>300)l.removeChild(l.firstChild);
+ l.scrollTop=l.scrollHeight;
+}
+
+function conSend(){
+ let v=$('bcmd').value.trim();
+ if(!v||MODE!='ble')return;
+ if(upBusy||dlBusy){msg('Wait for the Bluetooth transfer to finish');return}
+ $('bcmd').value='';
+ con('>> '+(/^pin(?:\s|$)/i.test(v)?'pin [hidden]':v));
+ const epoch=connectionEpoch;
+ bQ=bQ.then(()=>{
+  if(epoch!==connectionEpoch)throw new Error('Connection changed');
+  return bleWrite(v+'\n');
+ }).catch(()=>{});
+}
 
 // ---------- start + live status
-function start(){ready=1;fsDone=0;lastCfg=null;st();ipFill();
+
+function start(){
+ ready=1;
+ fsDone=0;
+ lastCfg=null;
+ st();
+ ipFill();
  loadSet().then(alist).then(list).catch(()=>{});
- let a=document.querySelector('.tab-pane.active');if(a)tabLoad(a.id)}
-function c(cmd,v){api('/api/cmd',v!==undefined?{c:cmd,v:v}:{c:cmd}).then(d=>{if(!d.ok&&d.err)msg(d.err);setTimeout(st,300)}).catch(()=>{})}
-function vol(v){$('vv').textContent=v;drag=Date.now();clearTimeout(vt);vt=setTimeout(()=>c('vol',v),150)}
-function bri(v){$('bv').textContent=v;clearTimeout(bt);bt=setTimeout(()=>api('/api/settings',{bright:v,live:1},1).catch(()=>{}),150)}
-function mark(){[...$('list').children].forEach((e,i)=>e.classList.toggle('on',i==cur))}
-function isTyping(){let ae=document.activeElement;return ae&&(ae.tagName=='INPUT'||ae.tagName=='TEXTAREA'||ae.tagName=='SELECT')}
-function applyStatus(d){lastSt=d;$('err').style.display='none';
- if(d.wifi!=lastWifi){lastWifi=d.wifi;ipFill()}
- $('clock').textContent=(d.clock||'Board clock not set')+(d.date?'  \u2022  '+d.date:'')+(d.hijri?'  \u2022  '+d.hijri:'')+
-  (d.bat>=0?'  \u2022  \uD83D\uDD0B'+d.bat+'%':'')+(d.wifi?'  \u2022  \uD83D\uDCF6 '+d.wifi:'');
+ let a=document.querySelector('.tab-pane.active');
+ if(a)tabLoad(a.id);
+}
+
+function c(cmd,v){
+ if(!ready){msg('Unlock and connect first');return}
+ api('/api/cmd',v!==undefined?{c:cmd,v:v}:{c:cmd}).then(d=>{
+  if(!d.ok&&d.err)msg(d.err);
+  setTimeout(st,300);
+ }).catch(()=>{});
+}
+
+function vol(v){
+ $('vv').textContent=v;
+ drag=Date.now();
+ clearTimeout(vt);
+ vt=setTimeout(()=>c('vol',v),150);
+}
+
+function bri(v){
+ $('bv').textContent=v;
+ clearTimeout(bt);
+ bt=setTimeout(()=>{
+  if(!ready)return;
+  api('/api/settings',{bright:v,live:1},1).then(d=>{
+   if(!d.ok)msg(d.err);
+  }).catch(()=>{});
+ },150);
+}
+
+function mark(){
+ [...$('list').children].forEach((e,i)=>e.classList.toggle('on',i==cur));
+}
+
+function isTyping(){
+ let ae=document.activeElement;
+ return ae&&(ae.tagName=='INPUT'||ae.tagName=='TEXTAREA'||ae.tagName=='SELECT');
+}
+
+function applyStatus(d){
+ if(!d||typeof d!='object')return;
+ lastSt=d;
+ $('err').style.display='none';
+ if(d.wifi!=lastWifi&&!upBusy&&!dlBusy&&!fwBusy){
+  lastWifi=d.wifi;
+  ipFill();
+ }
+ $('clock').textContent=(d.clock||'Board clock not set')+
+  (d.date?'  \u2022  '+d.date:'')+
+  (d.hijri?'  \u2022  '+d.hijri:'')+
+  (d.bat>=0?'  \u2022  \uD83D\uDD0B'+d.bat+'%':'')+
+  (d.wifi?'  \u2022  \uD83D\uDCF6 '+d.wifi:'');
  $('next').textContent=d.next?'Next: '+d.next:'';
+ if(d.fw)$('fwv').textContent=d.fw;
+
  let on=d.src!='none',al=(d.src=='alarm'||d.src=='azan')&&!d.test;
- $('title').textContent=on?(d.src=='music'?'\u266B ':d.test?'\uD83D\uDD14 Test: ':'')+d.title:'Stopped';
+ $('title').textContent=on?
+  (d.src=='music'?'\u266B ':d.test?'\uD83D\uDD14 Test: ':'')+d.title:'Stopped';
  $('time').textContent=f(d.pos)+' / '+(d.dur?f(d.dur):'--:--');
  $('fill').style.width=(d.dur?Math.min(100,d.pos*100/d.dur):0)+'%';
  $('pp').innerHTML=d.playing?'&#9208;':'&#9654;';
  if(Date.now()-drag>1500){$('vol').value=d.vol;$('vv').textContent=d.vol}
  $('alarm').style.display=al?'':'none';
- $('atitle').textContent=(d.src=='alarm'?'\uD83D\uDD14 Alarm: ':'\uD83D\uDD4C Azan: ')+d.title;
+ $('atitle').textContent=
+  (d.src=='alarm'?'\uD83D\uDD14 Alarm: ':'\uD83D\uDD4C Azan: ')+d.title;
  $('snz').style.display=d.src=='alarm'?'':'none';
- $('sn').style.display=d.snooze&&!al?'':'none';$('snt').textContent='\uD83D\uDD14 Snoozed until '+(d.snooze||'');
- cur=d.src=='music'?d.track:-1;mark();renderPt(d);
- if(d.cfg!=null&&d.cfg!==lastCfg){let first=lastCfg===null;lastCfg=d.cfg;if(!first)refreshFromBoard()}}
-function st(){if(MODE!='wifi'||busy||!ready||upBusy||mtGo)return;busy=1;   // [OTAWIN] mtGo
- api('/api/status').then(applyStatus).catch(e=>{if(e!==0)$('err').style.display=''}).finally(()=>busy=0)}
-function refreshFromBoard(){if(cfgBusy)return;cfgBusy=1;
- alist().then(()=>isTyping()?0:loadSet()).then(list).catch(()=>{}).finally(()=>cfgBusy=0)}
-function renderPt(d){let pt=d.pt||[],k=pt.join(',')+'|'+d.nexti+'|'+(setD?setD.h24:'');if(k==ptKey)return;ptKey=k;
- let L=$('ptl');L.innerHTML='';if(!pt.length){L.textContent='Prayer times not known yet (board clock not set)';return}
- pt.forEach((m,i)=>{let e=document.createElement('div');e.className='pt'+(i==d.nexti?' on':'');e.innerHTML='<span></span><b></b>';
-  e.firstChild.textContent=PN[i];e.lastChild.textContent=hm(m);L.appendChild(e)});ePrev()}
-function item(L,txt,click,btns){let e=document.createElement('div');e.className='it';let s=document.createElement('span');
- s.textContent=txt;if(click)s.onclick=click;e.appendChild(s);(btns||[]).forEach(b=>e.appendChild(b));L.appendChild(e);return e}
-function btn(h,cls,fn){let b=document.createElement('button');b.className='sm '+(cls||'');b.innerHTML=h;b.onclick=fn;return b}
-function list(){return api('/api/list').then(a=>{let L=$('list');L.innerHTML='';
- if(!a.length){L.textContent='No audio files in /music';return}
- a.forEach((n,i)=>item(L,(i+1)+'.  '+n,()=>c('track',i)));mark()})}
+ $('sn').style.display=d.snooze&&!al?'':'none';
+ $('snt').textContent='\uD83D\uDD14 Snoozed until '+(d.snooze||'');
+ cur=d.src=='music'?d.track:-1;
+ mark();
+ renderPt(d);
+ if(d.cfg!=null&&d.cfg!==lastCfg){
+  let first=lastCfg===null;
+  lastCfg=d.cfg;
+  if(!first)refreshFromBoard();
+ }
+}
+
+function st(){
+ if(MODE!='wifi'||busy||!ready||upBusy||fwBusy||mtGo)return;
+ busy=1;
+ api('/api/status').then(applyStatus).catch(e=>{
+  if(e!==0)$('err').style.display='';
+ }).finally(()=>busy=0);
+}
+
+function refreshFromBoard(){
+ if(cfgBusy||upBusy||dlBusy||fwBusy)return;
+ cfgBusy=1;
+ alist().then(()=>isTyping()?0:loadSet()).then(list)
+  .catch(()=>{}).finally(()=>cfgBusy=0);
+}
+
+function renderPt(d){
+ let pt=d.pt||[];
+ let k=pt.join(',')+'|'+d.nexti+'|'+(setD?setD.h24:'');
+ if(k==ptKey)return;
+ ptKey=k;
+ let L=$('ptl');
+ L.innerHTML='';
+ if(!pt.length){
+  L.textContent='Prayer times not known yet (board clock not set)';
+  return;
+ }
+ pt.forEach((m,i)=>{
+  let e=document.createElement('div');
+  e.className='pt'+(i==d.nexti?' on':'');
+  e.innerHTML='<span></span><b></b>';
+  e.firstChild.textContent=PN[i];
+  e.lastChild.textContent=hm(m);
+  L.appendChild(e);
+ });
+ ePrev();
+}
+
+function item(L,txt,click,btns){
+ let e=document.createElement('div');
+ e.className='it';
+ let s=document.createElement('span');
+ s.textContent=txt;
+ if(click)s.onclick=click;
+ e.appendChild(s);
+ (btns||[]).forEach(b=>e.appendChild(b));
+ L.appendChild(e);
+ return e;
+}
+
+function btn(h,cls,fn){
+ let b=document.createElement('button');
+ b.className='sm '+(cls||'');
+ b.innerHTML=h;
+ b.onclick=fn;
+ return b;
+}
+
+function list(){
+ return api('/api/list').then(a=>{
+  if(!Array.isArray(a))return;
+  let L=$('list');
+  L.innerHTML='';
+  if(!a.length){L.textContent='No audio files in /music';return}
+  a.forEach((n,i)=>item(L,(i+1)+'.  '+n,()=>c('track',i)));
+  mark();
+ });
+}
 
 // ---------- tabs
-function switchTab(id,b){document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+
+function switchTab(id,b){
+ document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
- $(id).classList.add('active');(b||$('btn-files')).classList.add('active');tabLoad(id)}
-function tabLoad(id){if(!ready||upBusy)return;if(id=='t-files'&&!fsDone){fsDone=1;fsl(cwd);fsinfo()}if(id=='t-wifi')wfGet()}
-function openFilesTab(p){fsDone=1;switchTab('t-files',$('btn-files'));fsl(p||'/');fsinfo()}
+ $(id).classList.add('active');
+ (b||$('btn-files')).classList.add('active');
+ tabLoad(id);
+}
+
+function tabLoad(id){
+ if(!ready||upBusy||dlBusy||fwBusy)return;
+ if(id=='t-files'&&!fsDone){fsDone=1;fsl(cwd);fsinfo()}
+ if(id=='t-wifi')wfGet();
+}
+
+function openFilesTab(p){
+ fsDone=1;
+ switchTab('t-files',$('btn-files'));
+ fsl(p||'/');
+ fsinfo();
+}
 
 // ---------- settings / prayer / location
-function tzShow(){let v=+$('tzsel').value;$('tzrow').style.display=v>=ntz?'':'none';
- $('tzlbl').textContent=v==ntz?'UTC offset (e.g. +3, -5:30)':'POSIX rule'}
+
+function tzShow(){
+ let v=+$('tzsel').value;
+ $('tzrow').style.display=v>=ntz?'':'none';
+ $('tzlbl').textContent=v==ntz?'UTC offset (e.g. +3, -5:30)':'POSIX rule';
+}
+
 function fShow(){$('frow').style.display=$('fdefcb').checked?'none':''}
-function fillAz(s,fl,want,fb){s.innerHTML='';if(!fl.length){s.add(new Option('(no audio files in /azan)',''));return}
- fl.forEach(p=>s.add(new Option(bn(p),p)));let i=fl.findIndex(p=>p.toLowerCase()==want.toLowerCase());s.selectedIndex=i>=0?i:fb}
-function loadSet(){return api('/api/settings',setD?{lists:0}:{}).then(d=>{
- if(d.methods){METH=d.methods;MANG=d.mang;TZS=d.tzs}setD=d;
- let m=$('method');if(!m.options.length)METH.forEach((n,i)=>m.add(new Option(n+'  (Fajr '+(+MANG[i]).toFixed(1)+')',i)));
- let t=$('tzsel');ntz=TZS.length;if(!t.options.length){TZS.forEach((n,i)=>t.add(new Option(n,i)));
-  t.add(new Option('Custom UTC offset',ntz));t.add(new Option('Custom POSIX rule',ntz+1))}
- if(!dirty.set){m.value=d.method;$('hijri').value=d.hijri;$('h24').checked=d.h24;$('bright').value=d.bright;$('bv').textContent=d.bright;
-  if(d.locksec!=null)$('locksec').value=d.locksec} if(!dirty.loc){t.value=d.tzsel;$('tzval').value=d.tzval||'';tzShow();$('city').value=d.city;
-  $('lat').value=(+d.lat).toFixed(4);$('lon').value=(+d.lon).toFixed(4)}
- let def=+MANG[d.method]||0;
- if(!dirty.pray){d.az.forEach((v,i)=>$('az'+i).checked=v);$('azvol').value=d.azvol;$('lead').value=d.lead;$('magh').value=d.magh;
-  $('azbg').checked=!!d.azbg;
-  fillAz($('azfile'),d.azfiles,d.azfile||'/azan/azan.mp3',0);
-  fillAz($('azfajr'),d.azfiles,d.azfajr||'/azan/azan_fajr.mp3',Math.max(0,$('azfile').selectedIndex));
-  $('fdef').textContent='('+def.toFixed(1)+')';$('fdefcb').checked=!(d.fangle>0);$('fangle').value=(d.fangle>0?+d.fangle:def).toFixed(1);fShow()}
- $('loc').textContent='Now: '+d.city+'   '+(+d.lat).toFixed(4)+', '+(+d.lon).toFixed(4)+'   |   '+d.tz;
- $('phdr').textContent=d.city+'  |  '+METH[d.method]+'  |  Fajr angle '+(d.fangle>0?(+d.fangle).toFixed(1)+' (custom)':def.toFixed(1))+
-  '  |  Maghrib = sunset + '+d.magh+' min';
- keep0=d.keep;$('wkeep').checked=d.keep;ptKey='';if(lastSt)renderPt(lastSt)})}
-function saveSet(){api('/api/settings',{method:$('method').value,hijri:$('hijri').value,h24:$('h24').checked?1:0,locksec:$('locksec').value},1)
- .then(d=>{msg(d.ok?'Settings saved':d.err);if(d.ok){dirty.set=0;loadSet();alist()}}).catch(()=>{})}
-function savePray(){let a={azvol:$('azvol').value,lead:$('lead').value,magh:$('magh').value,fangle:$('fdefcb').checked?0:$('fangle').value};
+
+function fillAz(s,fl,want,fb){
+ s.innerHTML='';
+ fl=fl||[];
+ want=want||'';
+ if(!fl.length){s.add(new Option('(no audio files in /azan)',''));return}
+ fl.forEach(p=>s.add(new Option(bn(p),p)));
+ let i=fl.findIndex(p=>p.toLowerCase()==want.toLowerCase());
+ s.selectedIndex=i>=0?i:Math.min(fl.length-1,Math.max(0,fb));
+}
+
+function loadSet(){
+ return api('/api/settings',setD?{lists:0}:{}).then(d=>{
+  if(d.methods){METH=d.methods;MANG=d.mang||[];TZS=d.tzs||[]}
+  setD=d;
+  let m=$('method');
+  if(!m.options.length)METH.forEach((n,i)=>
+   m.add(new Option(n+'  (Fajr '+(+MANG[i]).toFixed(1)+')',i)));
+
+  let t=$('tzsel');
+  ntz=TZS.length;
+  if(!t.options.length){
+   TZS.forEach((n,i)=>t.add(new Option(n,i)));
+   t.add(new Option('Custom UTC offset',ntz));
+   t.add(new Option('Custom POSIX rule',ntz+1));
+  }
+
+  if(!dirty.set){
+   m.value=d.method;
+   $('hijri').value=d.hijri;
+   $('h24').checked=d.h24;
+   $('bright').value=d.bright;
+   $('bv').textContent=d.bright;
+   if(d.locksec!=null)$('locksec').value=d.locksec;
+   $('bname').value=d.bname||'';
+  }
+  $('bname').placeholder=d.defble||'P4-Clock';
+  nameSaved(d);
+  namePreview();
+
+  if(!dirty.loc){
+   t.value=d.tzsel;
+   $('tzval').value=d.tzval||'';
+   tzShow();
+   $('city').value=d.city;
+   $('lat').value=(+d.lat).toFixed(4);
+   $('lon').value=(+d.lon).toFixed(4);
+  }
+
+  let def=+MANG[d.method]||0;
+  if(!dirty.pray){
+   (d.az||[]).forEach((v,i)=>$('az'+i).checked=v);
+   $('azvol').value=d.azvol;
+   $('lead').value=d.lead;
+   $('magh').value=d.magh;
+   $('azbg').checked=!!d.azbg;
+   fillAz($('azfile'),d.azfiles,d.azfile||'/azan/azan.mp3',0);
+   fillAz($('azfajr'),d.azfiles,d.azfajr||'/azan/azan_fajr.mp3',
+    Math.max(0,$('azfile').selectedIndex));
+   fillAz($('azmag'),d.azfiles,d.azmag,Math.max(0,$('azfile').selectedIndex));
+   $('fdef').textContent='('+def.toFixed(1)+')';
+   $('fdefcb').checked=!(d.fangle>0);
+   $('fangle').value=(d.fangle>0?+d.fangle:def).toFixed(1);
+   fShow();
+  }
+
+  $('loc').textContent='Now: '+d.city+'   '+(+d.lat).toFixed(4)+', '+
+   (+d.lon).toFixed(4)+'   |   '+d.tz;
+  $('phdr').textContent=d.city+'  |  '+METH[d.method]+'  |  Fajr angle '+
+   (d.fangle>0?(+d.fangle).toFixed(1)+' (custom)':def.toFixed(1))+
+   '  |  Maghrib = sunset + '+d.magh+' min';
+
+  keep0=d.keep;
+  $('wkeep').checked=d.keep;
+  ptKey='';
+  if(lastSt)renderPt(lastSt);
+ });
+}
+
+function saveSet(){
+ if(!ready){msg('Unlock and connect first');return}
+ if(setSaving)return;
+ let n=$('bname').value.trim();
+ if(!validClockName(n)){
+  namePreview();
+  msg('Invalid clock name');
+  return;
+ }
+ let lock=$('locksec').value.trim();
+ if(!/^\d+$/.test(lock)||Number(lock)>600){
+  msg('Auto-lock must be 0 - 600 seconds');
+  return;
+ }
+ let oldHost=setD&&setD.host;
+ setSaving=1;
+ $('setsave').disabled=true;
+ api('/api/settings',{
+  bname:n,
+  method:$('method').value,
+  hijri:$('hijri').value,
+  h24:$('h24').checked?1:0,
+  locksec:lock
+ },1).then(d=>{
+  let changed=d.host&&oldHost&&d.host!==oldHost;
+  let text=d.ok?'Settings saved':(d.err||'Save failed');
+  if(d.host){
+   text+='. WiFi address: http://'+d.host+'.local/';
+   if(setD){
+    setD.bname=n;
+    setD.host=d.host;
+    setD.ble=d.ble||n||setD.defble||'P4-Clock';
+    nameSaved(setD);
+   }
+  }
+  if(changed){
+   text+=' If this WiFi connection stops responding, open the new address or use the board IP.';
+  }
+  if(MODE=='ble'&&d.ble){
+   text+=' Scan again after disconnecting to see the new advertised name.';
+  }
+  msg(text);
+  if(d.ok){
+   dirty.set=0;
+   $('bname').value=n;
+   namePreview();
+   loadSet().catch(()=>{});
+   alist().catch(()=>{});
+  }
+ }).catch(e=>{
+  if(e!==0)msg('Could not save settings. Check the connection.');
+ }).finally(()=>{
+  setSaving=0;
+  $('setsave').disabled=false;
+ });
+}
+
+function savePray(){
+ let a={
+  azvol:$('azvol').value,
+  lead:$('lead').value,
+  magh:$('magh').value,
+  fangle:$('fdefcb').checked?0:$('fangle').value
+ };
  for(let i=0;i<3;i++)a['az'+i]=$('az'+i).checked?1:0;
  a.azbg=$('azbg').checked?1:0;
- if($('azfile').value){a.azfile=$('azfile').value;a.azfajr=$('azfajr').value}
- api('/api/settings',a,1).then(d=>{msg(d.ok?'Prayer settings saved':d.err);if(d.ok){dirty.pray=0;loadSet();alist()}}).catch(()=>{})}
-function azTest(fj){api('/api/azan/test',{fajr:fj,file:$(fj?'azfajr':'azfile').value,vol:$('azvol').value},1)
- .then(d=>{if(!d.ok)msg(d.err)}).catch(()=>{})}
-function saveLoc(){api('/api/settings',{city:$('city').value,lat:$('lat').value,lon:$('lon').value,tzsel:$('tzsel').value,
- tzval:$('tzval').value,savecity:$('savecity').checked?1:0},1).then(d=>{msg(d.ok?'Location saved'+(d.msg?' - '+d.msg:''):d.err);
- if(d.ok){dirty.loc=0;loadSet();alist()}}).catch(()=>{})}
-function clist(){api('/api/cities',{q:$('cq').value.trim()}).then(d=>{let L=$('cres');L.innerHTML='';
- $('cmsg').textContent=d.match+' of '+d.total+' cities in '+d.file+(d.match>d.list.length?' - first '+d.list.length+' shown, type to search':'');
- d.list.forEach(x=>item(L,x.n+'   '+(+x.lat).toFixed(4)+', '+(+x.lon).toFixed(4)+'   '+x.tz,()=>useCity(x.n),
-  [btn('&#128465;','r',()=>{if(confirm('Delete "'+x.n+'" from the cities list?'))
-    api('/api/city',{a:'del',name:x.n},1).then(r=>{msg(r.ok?'Deleted':r.err);clist()}).catch(()=>{})})]))}).catch(()=>{})}
-function useCity(n){api('/api/city',{a:'use',name:n},1).then(d=>{msg(d.ok?'Using '+n:d.err);$('cres').innerHTML='';$('cmsg').textContent='';
- dirty.loc=0;loadSet();alist()}).catch(()=>{})}
-function geo(){gq=$('cq').value.trim();if(!gq){msg('Type a city name first');return}
- api('/api/geo/start',{q:gq},1).then(d=>{if(!d.ok){msg(d.err);return}$('cres').innerHTML='';gpoll()}).catch(()=>{})}
-function gpoll(){clearTimeout(gt);api('/api/geo').then(d=>{$('cmsg').textContent=d.msg||'';
- if(d.state=='busy'){gt=setTimeout(gpoll,1000);return}
- if(d.state!='done')return;
- if(d.list.length==1){gUse(0);return}
- let L=$('cres');L.innerHTML='';
- d.list.forEach((r,i)=>item(L,r.label+'   '+(+r.lat).toFixed(4)+', '+(+r.lon).toFixed(4)+'   '+r.tz,()=>gUse(i)));
- item(L,'\u2715 Cancel',()=>{api('/api/geo/cancel',{},1).catch(()=>{});L.innerHTML='';$('cmsg').textContent=''})}).catch(()=>{})}
-function gUse(i){api('/api/geo/use',{i:i,name:gq},1).then(d=>{msg(d.ok?'Location set'+(d.msg?' - '+d.msg:''):d.err);
- $('cres').innerHTML='';$('cmsg').textContent='';dirty.loc=0;loadSet();alist()}).catch(()=>{})}
-function setPin(){let p=$('np').value.trim();
- if(!p&&!confirm('Remove the PIN? Anyone nearby / on your WiFi can then use this page.'))return;
- api('/api/settings',{newpin:p},1).then(d=>{if(d.pin!==undefined){P=d.pin;localStorage.setItem('pin',P)}
-  $('np').value='';msg(d.ok?(p?'PIN changed':'PIN removed'):d.err)}).catch(()=>{})}
-function setTime(){api('/api/time',{t:Math.floor(Date.now()/1000)},1).then(d=>msg(d.ok?(d.rtc?'Board clock set':'Clock set, but the RTC chip was not written'):d.err)).catch(()=>{})}
-function restart(){if(confirm('Restart the board now?'))api('/api/restart',{},1).then(()=>msg('Restarting...')).catch(()=>{})}
+ if($('azfile').value){
+  a.azfile=$('azfile').value;
+  a.azfajr=$('azfajr').value;
+  a.azmag=$('azmag').value;
+ }
+ api('/api/settings',a,1).then(d=>{
+  msg(d.ok?'Prayer settings saved':d.err);
+  if(d.ok){
+   dirty.pray=0;
+   loadSet().catch(()=>{});
+   alist().catch(()=>{});
+  }
+ }).catch(()=>{});
+}
 
-// ---------- [OTAWIN] maintenance mode (WiFi only). Uses the normal PIN login (api()).
-function mtBtns(on){$('mtbtn').disabled=!on;$('wmaint').disabled=!on}
+function azTest(k){
+ api('/api/azan/test',{
+  k:k,
+  file:$(['azfajr','azfile','azmag'][k]).value,
+  vol:$('azvol').value
+ },1).then(d=>{if(!d.ok)msg(d.err)}).catch(()=>{});
+}
+
+function saveLoc(){
+ api('/api/settings',{
+  city:$('city').value,
+  lat:$('lat').value,
+  lon:$('lon').value,
+  tzsel:$('tzsel').value,
+  tzval:$('tzval').value,
+  savecity:$('savecity').checked?1:0
+ },1).then(d=>{
+  msg(d.ok?'Location saved'+(d.msg?' - '+d.msg:''):d.err);
+  if(d.ok){
+   dirty.loc=0;
+   loadSet().catch(()=>{});
+   alist().catch(()=>{});
+  }
+ }).catch(()=>{});
+}
+
+function clist(){
+ api('/api/cities',{q:$('cq').value.trim()}).then(d=>{
+  let L=$('cres');
+  L.innerHTML='';
+  $('cmsg').textContent=d.match+' of '+d.total+' cities in '+d.file+
+   (d.match>d.list.length?' - first '+d.list.length+' shown, type to search':'');
+  d.list.forEach(x=>item(L,
+   x.n+'   '+(+x.lat).toFixed(4)+', '+(+x.lon).toFixed(4)+'   '+x.tz,
+   ()=>useCity(x.n),
+   [btn('&#128465;','r',()=>{
+    if(confirm('Delete "'+x.n+'" from the cities list?')){
+     api('/api/city',{a:'del',name:x.n},1).then(r=>{
+      msg(r.ok?'Deleted':r.err);
+      clist();
+     }).catch(()=>{});
+    }
+   })]));
+ }).catch(()=>{});
+}
+
+function useCity(n){
+ api('/api/city',{a:'use',name:n},1).then(d=>{
+  msg(d.ok?'Using '+n:d.err);
+  if(!d.ok)return;
+  $('cres').innerHTML='';
+  $('cmsg').textContent='';
+  dirty.loc=0;
+  loadSet().catch(()=>{});
+  alist().catch(()=>{});
+ }).catch(()=>{});
+}
+
+function geo(){
+ gq=$('cq').value.trim();
+ if(!gq){msg('Type a city name first');return}
+ api('/api/geo/start',{q:gq},1).then(d=>{
+  if(!d.ok){msg(d.err);return}
+  $('cres').innerHTML='';
+  gpoll();
+ }).catch(()=>{});
+}
+
+function gpoll(){
+ clearTimeout(gt);
+ api('/api/geo').then(d=>{
+  $('cmsg').textContent=d.msg||'';
+  if(d.state=='busy'){gt=setTimeout(gpoll,1000);return}
+  if(d.state!='done')return;
+  if(d.list.length==1){gUse(0);return}
+  let L=$('cres');
+  L.innerHTML='';
+  d.list.forEach((r,i)=>item(L,
+   r.label+'   '+(+r.lat).toFixed(4)+', '+(+r.lon).toFixed(4)+'   '+r.tz,
+   ()=>gUse(i)));
+  item(L,'\u2715 Cancel',()=>{
+   api('/api/geo/cancel',{},1).catch(()=>{});
+   L.innerHTML='';
+   $('cmsg').textContent='';
+  });
+ }).catch(()=>{});
+}
+
+function gUse(i){
+ api('/api/geo/use',{i:i,name:gq},1).then(d=>{
+  msg(d.ok?'Location set'+(d.msg?' - '+d.msg:''):d.err);
+  if(!d.ok)return;
+  $('cres').innerHTML='';
+  $('cmsg').textContent='';
+  dirty.loc=0;
+  loadSet().catch(()=>{});
+  alist().catch(()=>{});
+ }).catch(()=>{});
+}
+
+function setPin(){
+ let p=$('np').value.trim();
+ if(p&&!/^\d{4,8}$/.test(p)){
+  msg('PIN must be 4 - 8 digits, or empty to remove it');
+  return;
+ }
+ if(!p&&!confirm('Remove the PIN? Anyone nearby / on your WiFi can then use this page.'))return;
+ api('/api/settings',{newpin:p},1).then(d=>{
+  if(d.pin!==undefined)P=d.pin;
+  $('np').value='';
+  msg(d.ok?(p?'PIN changed':'PIN removed'):d.err);
+ }).catch(()=>{});
+}
+
+function setTime(){
+ api('/api/time',{t:Math.floor(Date.now()/1000)},1).then(d=>
+  msg(d.ok?(d.rtc?'Board clock set':'Clock set, but the RTC chip was not written'):d.err)
+ ).catch(()=>{});
+}
+
+function restart(){
+ if(upBusy||dlBusy||fwBusy){msg('Finish or cancel the transfer first');return}
+ if(confirm('Restart the board now?')){
+  api('/api/restart',{},1).then(d=>{
+   msg(d.ok?'Restarting...':d.err);
+  }).catch(()=>{});
+ }
+}
+
+// ---------- maintenance mode
+
+function mtBtns(on){
+ $('mtbtn').disabled=!on;
+ $('wmaint').disabled=!on;
+}
+
 function mtText(t){$('mts').textContent=t;msg(t)}
+
 function maint(){
  if(MODE!='wifi'){msg('Maintenance mode works over WiFi only');return}
+ if(upBusy||dlBusy||fwBusy){msg('Finish or cancel the transfer first');return}
  if(mtGo)return;
  if(!confirm('Restart the clock in maintenance mode?\nThe clock, alarms and azan pause until you restart it normally from the maintenance page.'))return;
  mtBtns(0);
  api('/api/maint',{},1).then(d=>{
   if(!d.ok){msg(d.err||'Failed');mtBtns(1);return}
   mtGo=1;
+  clearTimeout(wt);
+  clearTimeout(gt);
   let s=20,u=BASE+'/';
   mtText('Restarting in maintenance mode... the maintenance page opens in '+s+' s');
   let t=setInterval(()=>{
-   if(--s<=0){clearInterval(t);mtText('Opening the maintenance page...');location.href=u}
-   else $('mts').textContent='Restarting in maintenance mode... the maintenance page opens in '+s+' s'},1000)})
- .catch(()=>mtBtns(1))}
+   if(--s<=0){
+    clearInterval(t);
+    mtText('Opening the maintenance page...');
+    location.href=u;
+   }else{
+    $('mts').textContent=
+     'Restarting in maintenance mode... the maintenance page opens in '+s+' s';
+   }
+  },1000);
+ }).catch(()=>mtBtns(1));
+}
+
+// ---------- [VIDEO] video mode
+
+function vmode(){
+ if(upBusy||dlBusy||fwBusy){msg('Finish or cancel the transfer first');return}
+ if(!confirm('Restart the clock in video mode?\nIt goes back to the clock by itself before the next azan or alarm.'))return;
+ $('vdbtn').disabled=true;
+ api('/api/video',{},1).then(d=>{
+  if(!d.ok){msg(d.err||'Failed');$('vdbtn').disabled=false;return}
+  let t='Restarting in video mode...'+(MODE=='wifi'?' the video page opens in 20 s':' control it on the clock screen');
+  $('vds').textContent=t;msg(t);
+  if(MODE=='wifi'){clearTimeout(wt);clearTimeout(gt);setTimeout(()=>location.href=BASE+'/',20000)}
+ }).catch(()=>$('vdbtn').disabled=false);
+}
 
 // ---------- alarms
-function alist(){return api('/api/alarms').then(a=>{rawAlarms=a;let L=$('alist');L.innerHTML='';
- a.forEach((x,i)=>{let e=document.createElement('div');e.className='it';
-  let k=document.createElement('input');k.type='checkbox';k.checked=x.on;
-  k.onchange=()=>api('/api/alarm',{i:i,on:k.checked?1:0},1).then(alist).catch(()=>{});
-  let s=document.createElement('span');s.innerHTML='<b></b><br><small class="dim"></small>';
-  s.firstChild.textContent=x.t+'   '+x.l;s.lastChild.textContent=x.d;s.onclick=()=>eOpen(i);
-  e.appendChild(k);e.appendChild(s);L.appendChild(e)});
- $('acnt').textContent=a.filter(x=>x.on).length+' of '+a.length+' alarms on.'})}
-function genDays(){DN.forEach(n=>{let l=document.createElement('label');l.innerHTML='<input type="checkbox" class="e_d"> '+n;$('e_days').appendChild(l)})}
-function eShow(){let rel=+$('e_mode').value>=0;$('e_fix').classList.toggle('hide',rel);$('e_rel').classList.toggle('hide',!rel);
- $('e_daterow').classList.toggle('hide',!$('e_dt').checked);ePrev()}
-function ePrev(){if(eIdx<0)return;let mode=+$('e_mode').value,el=$('e_prev');if(mode<0){el.textContent='';return}
- let pt=lastSt&&lastSt.pt;if(!pt||!pt.length){el.textContent='Prayer times not known yet';return}
- let p=pt[AZPT[mode]],off=Math.min(180,Math.max(0,parseInt($('e_off').value)||0))*(+$('e_dir').value);
- el.textContent='Today it rings at '+hm(((p+off)%1440+1440)%1440)+'  ('+PN[AZPT[mode]]+' is at '+hm(p)+')'}
-function loadSounds(want){let s=$('e_snd');s.innerHTML='<option value="">Default (alarm.mp3)</option>';
+
+function alist(){
+ return api('/api/alarms').then(a=>{
+  if(!Array.isArray(a))return;
+  rawAlarms=a;
+  let L=$('alist');
+  L.innerHTML='';
+  a.forEach((x,i)=>{
+   let e=document.createElement('div');
+   e.className='it';
+   let k=document.createElement('input');
+   k.type='checkbox';
+   k.checked=x.on;
+   k.onchange=()=>api('/api/alarm',{i:i,on:k.checked?1:0},1).then(d=>{
+    if(!d.ok)msg(d.err);
+    return alist();
+   }).catch(()=>{});
+   let s=document.createElement('span');
+   s.innerHTML='<b></b><br><small class="dim"></small>';
+   s.firstChild.textContent=x.t+'   '+x.l;
+   s.lastChild.textContent=x.d;
+   s.onclick=()=>eOpen(i);
+   e.appendChild(k);
+   e.appendChild(s);
+   L.appendChild(e);
+  });
+  $('acnt').textContent=a.filter(x=>x.on).length+' of '+a.length+' alarms on.';
+ });
+}
+
+function genDays(){
+ DN.forEach(n=>{
+  let l=document.createElement('label');
+  l.innerHTML='<input type="checkbox" class="e_d"> '+n;
+  $('e_days').appendChild(l);
+ });
+}
+
+function eShow(){
+ let rel=+$('e_mode').value>=0;
+ $('e_fix').classList.toggle('hide',rel);
+ $('e_rel').classList.toggle('hide',!rel);
+ $('e_daterow').classList.toggle('hide',!$('e_dt').checked);
+ ePrev();
+}
+
+function ePrev(){
+ if(eIdx<0)return;
+ let mode=+$('e_mode').value,el=$('e_prev');
+ if(mode<0){el.textContent='';return}
+ let pt=lastSt&&lastSt.pt;
+ let p=pt&&pt[AZPT[mode]];
+ if(p==null||p<0){
+  el.textContent='This prayer time is not available';
+  return;
+ }
+ let off=Math.min(180,Math.max(0,parseInt($('e_off').value)||0))*
+  (+$('e_dir').value);
+ el.textContent='Today it rings at '+hm(((p+off)%1440+1440)%1440)+
+  '  ('+PN[AZPT[mode]]+' is at '+hm(p)+')';
+}
+
+function loadSounds(want){
+ let s=$('e_snd');
+ s.innerHTML='<option value="">Default (alarm.mp3)</option>';
  return api('/api/fs/list',{path:'/alarms'}).then(d=>{
-  (d.files||[]).filter(x=>AUD.test(x.n)).sort((a,b)=>a.n.localeCompare(b.n)).forEach(x=>s.add(new Option(x.n,J('/alarms',x.n))));
-  s.value=want||'';if(s.selectedIndex<0&&want){let b=bn(want).toLowerCase();for(let o of s.options)if(bn(o.value).toLowerCase()==b){s.value=o.value;break}}
-  if(s.selectedIndex<0)s.value=''}).catch(()=>{})}
-function eOpen(i){let x=rawAlarms[i],now=new Date();eIdx=i;$('e_n').textContent=i+1;$('e_lbl').value=x.label||'';
- $('e_mode').value=x.rel;$('e_time').value=p2(x.hour)+':'+p2(x.min);
- $('e_dir').value=x.offset<0?-1:1;$('e_off').value=Math.abs(x.offset);
- document.querySelectorAll('.e_d').forEach((cb,d)=>cb.checked=((x.days>>d)&1)==1);
- $('e_ram').checked=x.ram&&!x.useDate;$('e_dt').checked=x.useDate;
- $('e_date').value=x.useDate?x.year+'-'+p2(x.month)+'-'+p2(x.day):now.getFullYear()+'-'+p2(now.getMonth()+1)+'-'+p2(now.getDate());
- $('e_vol').value=x.vol;$('e_vl').textContent=x.vol;
- loadSounds(x.sound);eShow();$('aed').classList.remove('hide');$('aed').scrollIntoView({behavior:'smooth'})}
-function eVol(v){$('e_vl').textContent=v;clearTimeout(et);
- if(lastSt&&lastSt.test)et=setTimeout(()=>api('/api/alarm/test',{a:'vol',vol:v},1).catch(()=>{}),150)}
-function eTest(){api('/api/alarm/test',{a:'play',path:$('e_snd').value,vol:$('e_vol').value},1).then(d=>{if(!d.ok)msg(d.err)}).catch(()=>{})}
+  (d.files||[]).filter(x=>AUD.test(x.n))
+   .sort((a,b)=>a.n.localeCompare(b.n))
+   .forEach(x=>s.add(new Option(x.n,J('/alarms',x.n))));
+  s.value=want||'';
+  if(s.selectedIndex<0&&want){
+   let b=bn(want).toLowerCase();
+   for(let o of s.options){
+    if(bn(o.value).toLowerCase()==b){s.value=o.value;break}
+   }
+  }
+  if(s.selectedIndex<0)s.value='';
+ }).catch(()=>{});
+}
+
+function eOpen(i){
+ let x=rawAlarms[i],now=new Date();
+ if(!x)return;
+ eIdx=i;
+ $('e_n').textContent=i+1;
+ $('e_lbl').value=x.label||'';
+ $('e_mode').value=x.rel;
+ $('e_time').value=p2(x.hour)+':'+p2(x.min);
+ $('e_dir').value=x.offset<0?-1:1;
+ $('e_off').value=Math.abs(x.offset);
+ document.querySelectorAll('.e_d').forEach((cb,d)=>
+  cb.checked=((x.days>>d)&1)==1);
+ $('e_ram').checked=x.ram&&!x.useDate;
+ $('e_dt').checked=x.useDate;
+ $('e_date').value=x.useDate?
+  x.year+'-'+p2(x.month)+'-'+p2(x.day):
+  now.getFullYear()+'-'+p2(now.getMonth()+1)+'-'+p2(now.getDate());
+ $('e_vol').value=x.vol;
+ $('e_vl').textContent=x.vol;
+ loadSounds(x.sound);
+ eShow();
+ $('aed').classList.remove('hide');
+ $('aed').scrollIntoView({behavior:'smooth'});
+}
+
+function eVol(v){
+ $('e_vl').textContent=v;
+ clearTimeout(et);
+ if(lastSt&&lastSt.test){
+  et=setTimeout(()=>api('/api/alarm/test',{a:'vol',vol:v},1).catch(()=>{}),150);
+ }
+}
+
+function eTest(){
+ api('/api/alarm/test',{
+  a:'play',path:$('e_snd').value,vol:$('e_vol').value
+ },1).then(d=>{if(!d.ok)msg(d.err)}).catch(()=>{});
+}
+
 function eStop(){return api('/api/alarm/test',{a:'stop'},1).catch(()=>{})}
-function eClose(){if(lastSt&&lastSt.test)eStop();$('aed').classList.add('hide');eIdx=-1}
-function eSave(){if(eIdx<0)return;let t=($('e_time').value||'07:00').split(':'),mode=+$('e_mode').value,days=0;
- document.querySelectorAll('.e_d').forEach((cb,d)=>{if(cb.checked)days|=1<<d});
- let off=Math.min(180,Math.max(0,parseInt($('e_off').value)||0))*(+$('e_dir').value);
- let a={i:eIdx,on:1,label:$('e_lbl').value.trim(),hour:+t[0]||0,min:+t[1]||0,days:days,rel:mode,offset:mode>=0?off:0,
-  ram:$('e_ram').checked?1:0,useDate:$('e_dt').checked?1:0,sound:$('e_snd').value,vol:$('e_vol').value};
- if($('e_dt').checked){let p=$('e_date').value.split('-');if(p.length!=3){msg('Choose a date');return}a.year=+p[0];a.month=+p[1];a.day=+p[2]}
- api('/api/alarm',a,1).then(d=>{msg(d.ok?'Alarm saved':d.err);eClose();alist()}).catch(()=>{})}
-function eDel(){if(eIdx<0||!confirm('Delete alarm '+(eIdx+1)+'?'))return;
- api('/api/alarm',{i:eIdx,a:'del'},1).then(d=>{msg(d.ok?'Alarm deleted':d.err);eClose();alist()}).catch(()=>{})}
+
+function eClose(){
+ clearTimeout(et);
+ if(lastSt&&lastSt.test)eStop();
+ $('aed').classList.add('hide');
+ eIdx=-1;
+}
+
+function eSave(){
+ if(eIdx<0)return;
+ let t=($('e_time').value||'07:00').split(':');
+ let mode=+$('e_mode').value,days=0;
+ document.querySelectorAll('.e_d').forEach((cb,d)=>{
+  if(cb.checked)days|=1<<d;
+ });
+ let off=Math.min(180,Math.max(0,parseInt($('e_off').value)||0))*
+  (+$('e_dir').value);
+ let a={
+  i:eIdx,on:1,label:$('e_lbl').value.trim(),
+  hour:+t[0]||0,min:+t[1]||0,days:days,
+  rel:mode,offset:mode>=0?off:0,
+  ram:$('e_ram').checked?1:0,useDate:$('e_dt').checked?1:0,
+  sound:$('e_snd').value,vol:$('e_vol').value
+ };
+ if($('e_dt').checked){
+  let p=$('e_date').value.split('-');
+  if(p.length!=3){msg('Choose a date');return}
+  a.year=+p[0];
+  a.month=+p[1];
+  a.day=+p[2];
+  if(a.year<2000||a.year>2099){
+   msg('Alarm date must be between 2000 and 2099');
+   return;
+  }
+ }
+ api('/api/alarm',a,1).then(d=>{
+  msg(d.ok?'Alarm saved':d.err);
+  if(d.ok)eClose();
+  alist().catch(()=>{});
+ }).catch(()=>{});
+}
+
+function eDel(){
+ if(eIdx<0||!confirm('Delete alarm '+(eIdx+1)+'?'))return;
+ api('/api/alarm',{i:eIdx,a:'del'},1).then(d=>{
+  msg(d.ok?'Alarm deleted':d.err);
+  if(d.ok)eClose();
+  alist().catch(()=>{});
+ }).catch(()=>{});
+}
 
 // ---------- WiFi
-function wfGet(){if(!ready||mtGo)return;clearTimeout(wt);api('/api/wifi').then(d=>{   // [OTAWIN] mtGo
- $('wst').textContent=d.status;$('wrtc').textContent=d.rtc;
- let on=d.con||d.busy;$('wcon').textContent=on?'\u2715 Disconnect':'\uD83D\uDCF6 Connect';$('wcon').dataset.on=on?1:0;
- $('wkeep').checked=d.keep;keep0=d.keep;$('wscan').textContent=d.scan=='busy'?'Scanning...':'\u21BB Scan';
- if(d.nets){let L=$('wl');L.innerHTML='';if(!d.nets.length)L.textContent='No networks found';
-  d.nets.forEach(n=>item(L,'\uD83D\uDCF6 '+n.s+'   ('+n.r+' dBm)'+(n.o?'  [open]':''),()=>{$('wssid').value=n.s;$('wpass').value='';$('wpass').focus()}))}
- if($('t-wifi').classList.contains('active'))wt=setTimeout(wfGet,d.scan=='busy'?1500:4000)}).catch(()=>{})}
-function wfPost(a,ok){return api('/api/wifi',a,1).then(d=>{msg(d.ok?ok:d.err);setTimeout(wfGet,600)}).catch(()=>{})}
-function wfScan(){$('wl').textContent='Scanning...';wfPost({a:'scan'},'Scanning...')}
-function wfJoin(){let s=$('wssid').value.trim();if(!s){msg('Choose a network first');return}
- if(MODE=='wifi'&&!confirm('The board leaves the current network to join "'+s+'". This page may stop working. Continue?'))return;
- wfPost({a:'join',ssid:s,pass:$('wpass').value},'Connecting to '+s+' ...')}
-function wfToggle(){let on=$('wcon').dataset.on=='1';
+
+function wfGet(){
+ if(!ready||mtGo||upBusy||dlBusy||fwBusy)return;
+ clearTimeout(wt);
+ api('/api/wifi').then(d=>{
+  $('wst').textContent=d.status;
+  $('wrtc').textContent=d.rtc;
+  let on=d.con||d.busy;
+  $('wcon').textContent=on?'\u2715 Disconnect':'\uD83D\uDCF6 Connect';
+  $('wcon').dataset.on=on?1:0;
+  $('wkeep').checked=d.keep;
+  keep0=d.keep;
+  $('wscan').textContent=d.scan=='busy'?'Scanning...':'\u21BB Scan';
+  if(d.nets){
+   let L=$('wl');
+   L.innerHTML='';
+   if(!d.nets.length)L.textContent='No networks found';
+   d.nets.forEach(n=>item(L,
+    '\uD83D\uDCF6 '+n.s+'   ('+n.r+' dBm)'+(n.o?'  [open]':''),
+    ()=>{
+     $('wssid').value=n.s;
+     $('wpass').value='';
+     $('wpass').focus();
+    }));
+  }
+  if($('t-wifi').classList.contains('active')){
+   wt=setTimeout(wfGet,d.scan=='busy'?1500:4000);
+  }
+ }).catch(()=>{});
+}
+
+function wfPost(a,ok){
+ return api('/api/wifi',a,1).then(d=>{
+  msg(d.ok?ok:d.err);
+  setTimeout(wfGet,600);
+ }).catch(()=>{});
+}
+
+function wfScan(){
+ $('wl').textContent='Scanning...';
+ wfPost({a:'scan'},'Scanning...');
+}
+
+function wfJoin(){
+ let s=$('wssid').value.trim();
+ if(!s){msg('Choose a network first');return}
+ if(MODE=='wifi'&&!confirm('The board leaves the current network to join "'+
+  s+'". This page may stop working. Continue?'))return;
+ wfPost({a:'join',ssid:s,pass:$('wpass').value},'Connecting to '+s+' ...');
+}
+
+function wfToggle(){
+ let on=$('wcon').dataset.on=='1';
  if(on&&MODE=='wifi'&&!confirm('Disconnect WiFi? This page stops working (use Bluetooth).'))return;
- wfPost({a:on?'disconnect':'connect'},on?'Disconnected':'Connecting...')}
-function wfClear(){if(!confirm('Erase the saved WiFi network and password?'+(MODE=='wifi'?' This page stops working.':'')))return;
- wfPost({a:'clear'},'Saved network erased')}
-function wfKeep(v){if(!v&&keep0&&MODE=='wifi'&&!confirm('With "Stay connected" OFF the board leaves WiFi after the time sync and this page stops working. Continue?')){$('wkeep').checked=true;return}
- wfPost({a:'keep',v:v?1:0},'Saved')}
+ wfPost({a:on?'disconnect':'connect'},on?'Disconnected':'Connecting...');
+}
+
+function wfClear(){
+ if(!confirm('Erase the saved WiFi network and password?'+
+  (MODE=='wifi'?' This page stops working.':'')))return;
+ wfPost({a:'clear'},'Saved network erased');
+}
+
+function wfKeep(v){
+ if(!v&&keep0&&MODE=='wifi'&&!confirm(
+  'With "Stay connected" OFF the board leaves WiFi after the time sync and this page stops working. Continue?')){
+  $('wkeep').checked=true;
+  return;
+ }
+ wfPost({a:'keep',v:v?1:0},'Saved');
+}
 
 // ---------- files
-function fsl(p){api('/api/fs/list',{path:p}).then(d=>{if(!d.ok){msg(d.err);return}
- cwd=d.path;$('cwd').textContent=cwd;selSet(null);fsz={};let L=$('fl');L.innerHTML='';
- let cmp=(a,b)=>a.toLowerCase().localeCompare(b.toLowerCase());
- if(cwd!='/')item(L,'\uD83D\uDCC1 ..',()=>fsl(up(cwd)));
- d.dirs.sort(cmp).forEach(n=>item(L,'\uD83D\uDCC1 '+n,()=>fsl(J(cwd,n)),[btn('&#8943;','g',()=>selSet(J(cwd,n),1))]));
- d.files.sort((a,b)=>cmp(a.n,b.n)).forEach(x=>{let p=J(cwd,x.n);fsz[p]=x.s;
-  item(L,'\uD83D\uDCC4 '+x.n+'   ('+sz(x.s)+')',()=>selSet(p,0),[btn('&#11015;','g',()=>fdlPath(p))])});
- if(!d.dirs.length&&!d.files.length)L.appendChild(document.createTextNode('(empty folder)'));
- if(d.more)msg('Big folder - only the first part is shown')}).catch(()=>{})}
-function fsinfo(){api('/api/fs/info').then(d=>{if(d.ok)$('space').textContent='   ('+sz(d.total-d.used)+' free of '+sz(d.total)+')'}).catch(()=>{})}
-function selSet(p,dir){sel=p;selDir=dir;$('sel').classList.toggle('hide',!p);if(!p)return;$('seln').textContent=p;
- $('bplay').style.display=!dir&&AUD.test(p)?'':'none';$('bdl').style.display=dir?'none':''}
-function fop(path,a,ok){api('/api/fs/'+path,a,1).then(d=>{msg(d.ok?ok:d.err);fsl(cwd);fsinfo();if(d.ok)list()}).catch(()=>{})}
-function mkd(){let n=prompt('New folder name in '+cwd);if(n)fop('mkdir',{path:J(cwd,n)},'Folder created')}
-function fdel(){if(confirm('Delete '+sel+(selDir?' and EVERYTHING inside it':'')+'?'))fop('delete',{path:sel},'Deleted')}
-function fren(){let n=prompt('New name',bn(sel));if(n&&n!=bn(sel))fop('move',{from:sel,to:J(up(sel),n)},'Renamed')}
-function clipSet(cut){clip={p:sel,cut:cut};$('paste').classList.remove('hide');$('paste').textContent='Paste "'+bn(sel)+'"'+(cut?' (move)':'');
- msg((cut?'Cut: ':'Copied: ')+sel+' - open a folder and press Paste')}
-function paste(){if(!clip)return;let k=clip;if(k.cut){clip=null;$('paste').classList.add('hide')}
- msg((k.cut?'Moving ':'Copying ')+bn(k.p)+' ...');fop(k.cut?'move':'copy',{from:k.p,to:cwd},k.cut?'Moved':'Copied')}
-function fplay(){api('/api/fs/play',{path:sel},1).then(d=>{msg(d.ok?'Playing '+bn(sel):d.err);setTimeout(st,500)}).catch(()=>{})}
 
-// download: WiFi = browser download, Bluetooth = chunks -> file
+function fsl(p){
+ if(upBusy||dlBusy)return;
+ api('/api/fs/list',{path:p}).then(d=>{
+  if(!d.ok){msg(d.err);return}
+  cwd=d.path;
+  $('cwd').textContent=cwd;
+  selSet(null);
+  fsz={};
+  let L=$('fl');
+  L.innerHTML='';
+  let cmp=(a,b)=>a.toLowerCase().localeCompare(b.toLowerCase());
+  if(cwd!='/')item(L,'\uD83D\uDCC1 ..',()=>fsl(up(cwd)));
+  d.dirs.sort(cmp).forEach(n=>item(L,'\uD83D\uDCC1 '+n,
+   ()=>fsl(J(cwd,n)),[btn('&#8943;','g',()=>selSet(J(cwd,n),1))]));
+  d.files.sort((a,b)=>cmp(a.n,b.n)).forEach(x=>{
+   let p=J(cwd,x.n);
+   fsz[p]=x.s;
+   item(L,'\uD83D\uDCC4 '+x.n+'   ('+sz(x.s)+')',
+    ()=>selSet(p,0),[btn('&#11015;','g',()=>fdlPath(p))]);
+  });
+  if(!d.dirs.length&&!d.files.length){
+   L.appendChild(document.createTextNode('(empty folder)'));
+  }
+  if(d.more)msg('Big folder - only the first part is shown');
+ }).catch(()=>{});
+}
+
+function fsinfo(){
+ api('/api/fs/info').then(d=>{
+  if(d.ok)$('space').textContent=
+   '   ('+sz(d.total-d.used)+' free of '+sz(d.total)+')';
+ }).catch(()=>{});
+}
+
+function selSet(p,dir){
+ sel=p;
+ selDir=dir;
+ $('sel').classList.toggle('hide',!p);
+ if(!p)return;
+ $('seln').textContent=p;
+ $('bplay').style.display=!dir&&AUD.test(p)?'':'none';
+ $('bdl').style.display=dir?'none':'';
+}
+
+function fop(path,a,ok){
+ if(upBusy||dlBusy||fwBusy){msg('Finish or cancel the transfer first');return}
+ api('/api/fs/'+path,a,1).then(d=>{
+  msg(d.ok?ok:d.err);
+  fsl(cwd);
+  fsinfo();
+  if(d.ok)list().catch(()=>{});
+ }).catch(()=>{});
+}
+
+function validFileName(n){
+ return n&&n!='.'&&n!='..'&&!/[\/\\\x00-\x1f]/.test(n);
+}
+
+function mkd(){
+ let n=prompt('New folder name in '+cwd);
+ if(n===null)return;
+ n=n.trim();
+ if(!validFileName(n)){msg('Enter a name without slashes or control characters');return}
+ fop('mkdir',{path:J(cwd,n)},'Folder created');
+}
+
+function fdel(){
+ if(!sel)return;
+ if(confirm('Delete '+sel+(selDir?' and EVERYTHING inside it':'')+'?')){
+  fop('delete',{path:sel},'Deleted');
+ }
+}
+
+function fren(){
+ if(!sel)return;
+ let n=prompt('New name',bn(sel));
+ if(n===null)return;
+ n=n.trim();
+ if(!validFileName(n)){msg('Enter a name without slashes or control characters');return}
+ if(n!=bn(sel))fop('move',{from:sel,to:J(up(sel),n)},'Renamed');
+}
+
+function clipSet(cut){
+ if(!sel)return;
+ clip={p:sel,cut:cut};
+ $('paste').classList.remove('hide');
+ $('paste').textContent='Paste "'+bn(sel)+'"'+(cut?' (move)':'');
+ msg((cut?'Cut: ':'Copied: ')+sel+' - open a folder and press Paste');
+}
+
+function paste(){
+ if(!clip)return;
+ if(upBusy||dlBusy||fwBusy){msg('Finish or cancel the transfer first');return}
+ let k=clip;
+ msg((k.cut?'Moving ':'Copying ')+bn(k.p)+' ...');
+ api('/api/fs/'+(k.cut?'move':'copy'),{from:k.p,to:cwd},1).then(d=>{
+  msg(d.ok?(k.cut?'Moved':'Copied'):d.err);
+  if(d.ok&&k.cut){
+   clip=null;
+   $('paste').classList.add('hide');
+  }
+  fsl(cwd);
+  fsinfo();
+  if(d.ok)list().catch(()=>{});
+ }).catch(()=>{});
+}
+
+function fplay(){
+ if(!sel)return;
+ api('/api/fs/play',{path:sel},1).then(d=>{
+  msg(d.ok?'Playing '+bn(sel):d.err);
+  setTimeout(st,500);
+ }).catch(()=>{});
+}
+
+// ---------- download
+
 function fdl(){if(sel&&!selDir)fdlPath(sel)}
+
 function fdlPath(p){
  if(dlBusy){msg('A download is already running - wait or press Cancel');return}
- if(upBusy){msg('An upload is running - wait or press Cancel');return}
+ if(upBusy||fwBusy){msg('An upload is running - wait or press Cancel');return}
  if(MODE=='ble'){bleDownload(p,fsz[p]||0);return}
- if(MODE!='wifi'){msg('Not connected');return}
- let a=document.createElement('a');a.href=BASE+'/api/fs/get?'+new URLSearchParams({pin:P,path:p});a.download=bn(p);
- document.body.appendChild(a);a.click();a.remove();msg('Downloading '+bn(p)+' - see the downloads of your browser')}
-function saveBlob(parts,name){let u=URL.createObjectURL(new Blob(parts,{type:'application/octet-stream'}));
- let a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(u),60000)}
+ if(MODE!='wifi'||!ready){msg('Not connected or not unlocked');return}
+ let a=document.createElement('a');
+ a.href=BASE+'/api/fs/get?'+new URLSearchParams({pin:P,path:p});
+ a.download=bn(p);
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ msg('Downloading '+bn(p)+' - see the downloads of your browser');
+}
+
+function saveBlob(parts,name){
+ let u=URL.createObjectURL(new Blob(parts,{type:'application/octet-stream'}));
+ let a=document.createElement('a');
+ a.href=u;
+ a.download=name;
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(u),60000);
+}
+
 async function bleDownload(p,size){
- if(size>1048576&&!confirm('Bluetooth is slow (about 5 - 10 KB/s). '+sz(size)+' may take '+Math.ceil(size/6000/60)+' min or more. Continue?'))return;
- dlBusy=1;upStop=0;$('upc').classList.remove('hide');
+ if(size>1048576&&!confirm(
+  'Bluetooth transfer speed varies. Download '+sz(size)+' over Bluetooth?'))return;
+ dlBusy=1;
+ upStop=0;
+ clearTimeout(wt);
+ $('upc').classList.remove('hide');
  let parts=[],off=0,t0=Date.now(),ok=0;
- try{for(;;){if(upStop)throw 'cancelled';
-   let d=await api('/api/fs/read',{path:p,off:off});if(!d.ok){msg(d.err);break}
-   size=d.size;let b=atob(d.b64),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
-   parts.push(u);off+=u.length;
+ try{
+  for(;;){
+   if(upStop)throw new Error('cancelled');
+   let d=await api('/api/fs/read',{path:p,off:off});
+   if(!d.ok)throw new Error(d.err||'Read failed');
+   size=d.size;
+   let b=atob(d.b64),u=new Uint8Array(b.length);
+   for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
+   if(!u.length&&!d.eof)throw new Error('Download made no progress');
+   parts.push(u);
+   off+=u.length;
    let kb=off/1024/Math.max(.1,(Date.now()-t0)/1000);
-   $('up').textContent='Downloading '+bn(p)+'  '+(size?Math.round(off*100/size):100)+'%  ('+kb.toFixed(1)+' KB/s)';
-   if(d.eof||!u.length){ok=1;break}}
-  if(ok){saveBlob(parts,bn(p));msg('Saved '+bn(p)+' ('+sz(off)+')')}
- }catch(e){if(e!==0)msg('Download stopped: '+e)}
- finally{dlBusy=0;$('up').textContent='';$('upc').classList.add('hide')}}
+   $('up').textContent='Downloading '+bn(p)+'  '+
+    (size?Math.round(off*100/size):100)+'%  ('+kb.toFixed(1)+' KB/s)';
+   if(d.eof){ok=1;break}
+  }
+  if(ok){
+   saveBlob(parts,bn(p));
+   msg('Saved '+bn(p)+' ('+sz(off)+')');
+  }
+ }catch(e){
+  if(e!==0)msg('Download stopped: '+(e.message||e));
+ }finally{
+  dlBusy=0;
+  $('up').textContent='';
+  $('upc').classList.add('hide');
+  if($('t-wifi').classList.contains('active'))wfGet();
+ }
+}
 
-// upload: WiFi = upbegin (PIN check) + raw PUT body, Bluetooth = base64 chunks
-async function upl(files){if(!files.length)return;
- if(dlBusy){msg('A download is running - wait or press Cancel');return}
- let dir=cwd,tot=files.reduce((s,x)=>s+x.size,0);
- if(MODE=='ble'&&tot>1048576&&!confirm('Bluetooth is slow (about 5 - 10 KB/s). '+sz(tot)+' may take '+Math.ceil(tot/6000/60)+' min or more. Continue?'))return;
- upBusy=1;upStop=0;$('upc').classList.remove('hide');
- for(let i=0;i<files.length&&!upStop;i++){try{if(MODE=='ble')await bleUpload(files[i],dir,i+1,files.length);else await webUpload(files[i],dir,i+1,files.length)}catch(e){}}
- upBusy=0;$('upc').classList.add('hide');$('up').textContent='';fsl(cwd);fsinfo();list();st()}
+// ---------- upload
+
 let upX=null;
-function upCancel(){upStop=1;if(upX)upX.abort()}
-function webUpload(fl,dir,i,n){
- return fetch(BASE+'/api/fs/upbegin?'+new URLSearchParams({pin:P,dir:dir,name:fl.name}),{method:'POST'})
- .then(r=>{if(r.status==401||r.status==429){lock('Wrong PIN');upStop=1;return null}return r.json().catch(()=>({}))})
- .then(d=>{if(!d)return;
-  if(!d.ok){msg(fl.name+': '+(d.err||'failed'));return}
-  return new Promise(res=>{let x=new XMLHttpRequest(),t0=Date.now();upX=x;
-   x.open('POST',BASE+'/api/fs/put');
-   x.setRequestHeader('Content-Type','application/octet-stream');
-   x.upload.onprogress=e=>{let kb=e.loaded/1024/Math.max(.1,(Date.now()-t0)/1000);
-    $('up').textContent='Uploading '+fl.name+'  '+Math.round(e.loaded*100/e.total)+'%  ('+kb.toFixed(0)+' KB/s, '+i+' of '+n+')'};
-   x.onload=()=>{upX=null;let r={};try{r=JSON.parse(x.responseText)}catch(e){}
-    if(!r.ok)msg(fl.name+': '+(r.err||('HTTP '+x.status)));res()};
-   x.onerror=()=>{upX=null;msg('Upload failed: '+fl.name);res()};
-   x.onabort=()=>{upX=null;msg('Upload cancelled');res()};
-   x.send(fl)})})
- .catch(()=>{msg('Upload failed: '+fl.name)})}
-async function bleUpload(fl,dir,i,n){const CH=3072;let t0=Date.now();
- let r=await api('/api/fs/up',{a:'begin',dir:dir,name:fl.name},1);if(!r.ok){msg(fl.name+': '+r.err);return}
- for(let off=0;off<fl.size;off+=CH){
-  if(upStop){await api('/api/fs/up',{a:'abort'},1);msg('Upload cancelled');return}
-  let b=new Uint8Array(await fl.slice(off,off+CH).arrayBuffer()),s='';for(let k=0;k<b.length;k++)s+=String.fromCharCode(b[k]);
-  r=await api('/api/fs/up',{a:'data',off:off,b64:btoa(s)},1);if(!r.ok){msg(fl.name+': '+r.err);return}
-  let done=off+b.length,kb=done/1024/Math.max(.1,(Date.now()-t0)/1000);
-  $('up').textContent='Uploading '+fl.name+'  '+Math.round(done*100/fl.size)+'%  ('+kb.toFixed(1)+' KB/s, '+i+' of '+n+')'}
- r=await api('/api/fs/up',{a:'end'},1);if(!r.ok)msg(fl.name+': '+r.err)}
 
-// ---------- OTA (WiFi only)
-function ota(){let fw=$('fw').files[0];if(!fw){msg('Choose the .bin file first');return}
+async function upl(files){
+ if(!files.length)return;
+ if(!ready||!MODE){msg('Unlock and connect first');return}
+ if(upBusy||dlBusy||fwBusy){msg('Another transfer is running - wait or press Cancel');return}
+ let dir=cwd,tot=files.reduce((s,x)=>s+x.size,0);
+ if(MODE=='ble'&&tot>1048576&&!confirm(
+  'Bluetooth transfer speed varies. Upload '+sz(tot)+' over Bluetooth?'))return;
+ upBusy=1;
+ upStop=0;
+ clearTimeout(wt);
+ $('upc').classList.remove('hide');
+ try{
+  for(let i=0;i<files.length&&!upStop;i++){
+   if(MODE=='ble')await bleUpload(files[i],dir,i+1,files.length);
+   else await webUpload(files[i],dir,i+1,files.length);
+  }
+ }catch(e){
+  upStop=1;
+  if(e!==0)msg('Upload stopped: '+(e.message||e));
+ }finally{
+  upBusy=0;
+  upX=null;
+  $('upc').classList.add('hide');
+  $('up').textContent='';
+  fsl(cwd);
+  fsinfo();
+  list().catch(()=>{});
+  st();
+  if($('t-wifi').classList.contains('active'))wfGet();
+ }
+}
+
+function upCancel(){
+ upStop=1;
+ if(upX)upX.abort();
+}
+
+async function webUpload(fl,dir,i,n){
+ if(upStop)return;
+ let d=await api('/api/fs/upbegin',{dir:dir,name:fl.name},1);
+ if(!d.ok)throw new Error(fl.name+': '+(d.err||'failed'));
+ if(upStop)return;
+
+ await new Promise((res,rej)=>{
+  let x=new XMLHttpRequest(),t0=Date.now();
+  upX=x;
+  x.open('POST',BASE+'/api/fs/put');
+  x.setRequestHeader('Content-Type','application/octet-stream');
+  x.upload.onprogress=e=>{
+   let kb=e.loaded/1024/Math.max(.1,(Date.now()-t0)/1000);
+   let pct=e.lengthComputable&&e.total?Math.round(e.loaded*100/e.total):0;
+   $('up').textContent='Uploading '+fl.name+'  '+pct+'%  ('+
+    kb.toFixed(0)+' KB/s, '+i+' of '+n+')';
+  };
+  x.onload=()=>{
+   upX=null;
+   let r={};
+   try{r=JSON.parse(x.responseText)}catch(e){}
+   if(x.status<200||x.status>=300||!r.ok){
+    rej(new Error(fl.name+': '+(r.err||('HTTP '+x.status))));
+   }else res();
+  };
+  x.onerror=()=>{upX=null;rej(new Error('Upload failed: '+fl.name))};
+  x.onabort=()=>{upX=null;rej(new Error('Upload cancelled'))};
+  x.send(fl);
+ });
+}
+
+async function bleUpload(fl,dir,i,n){
+ const CH=3072;
+ let t0=Date.now(),begun=false,ended=false;
+ try{
+  let r=await api('/api/fs/up',{a:'begin',dir:dir,name:fl.name},1);
+  if(!r.ok)throw new Error(fl.name+': '+r.err);
+  begun=true;
+  for(let off=0;off<fl.size;off+=CH){
+   if(upStop)throw new Error('Upload cancelled');
+   let b=new Uint8Array(await fl.slice(off,off+CH).arrayBuffer()),s='';
+   for(let k=0;k<b.length;k++)s+=String.fromCharCode(b[k]);
+   r=await api('/api/fs/up',{a:'data',off:off,b64:btoa(s)},1);
+   if(!r.ok)throw new Error(fl.name+': '+r.err);
+   let done=off+b.length,kb=done/1024/Math.max(.1,(Date.now()-t0)/1000);
+   $('up').textContent='Uploading '+fl.name+'  '+
+    Math.round(done*100/fl.size)+'%  ('+
+    kb.toFixed(1)+' KB/s, '+i+' of '+n+')';
+  }
+  if(upStop)throw new Error('Upload cancelled');
+  r=await api('/api/fs/up',{a:'end'},1);
+  if(!r.ok)throw new Error(fl.name+': '+r.err);
+  ended=true;
+ }finally{
+  if(begun&&!ended&&bRx&&MODE=='ble'&&ready){
+   try{await api('/api/fs/up',{a:'abort'},1)}catch(e){}
+  }
+ }
+}
+
+// ---------- firmware OTA
+
+function ota(){
+ if(MODE!='wifi'||!ready){msg('Firmware update needs an unlocked WiFi connection');return}
+ if(upBusy||dlBusy||fwBusy){msg('Another transfer is running');return}
+ let fw=$('fw').files[0];
+ if(!fw){msg('Choose the .bin file first');return}
  if(!/\.bin$/i.test(fw.name)){msg('That is not a .bin file');return}
  if(!confirm('Install '+fw.name+'? The clock restarts when done.'))return;
- let x=new XMLHttpRequest(),fd=new FormData();fd.append('firmware',fw,fw.name);
+
+ fwBusy=1;
+ clearTimeout(wt);
+ clearTimeout(gt);
+ let x=new XMLHttpRequest(),fd=new FormData();
+ fd.append('firmware',fw,fw.name);
  x.open('POST',BASE+'/api/ota?'+new URLSearchParams({pin:P}));
- x.upload.onprogress=e=>{$('otas').textContent='Uploading '+Math.round(e.loaded*100/e.total)+'% - do not close this page'};
- x.onload=()=>{let d={};try{d=JSON.parse(x.responseText)}catch(e){}
-  $('otas').textContent=d.ok?'Done - the clock restarts now. This page reloads in 25 s.':'Failed: '+(d.err||('HTTP '+x.status));
-  if(d.ok&&ONBOARD)setTimeout(()=>location.reload(),25000)};
- x.onerror=()=>{$('otas').textContent='Upload failed (connection lost)'};x.send(fd)}
+ x.upload.onprogress=e=>{
+  let pct=e.lengthComputable&&e.total?Math.round(e.loaded*100/e.total):0;
+  $('otas').textContent='Uploading '+pct+'% - do not close this page';
+ };
+ x.onload=()=>{
+  let d={};
+  try{d=JSON.parse(x.responseText)}catch(e){}
+  let success=x.status>=200&&x.status<300&&d.ok;
+  $('otas').textContent=success?
+   'Done - the clock restarts now.':
+   'Failed: '+(d.err||('HTTP '+x.status));
+  if(success){
+   mtGo=1;
+   if(ONBOARD){
+    $('otas').textContent+=' This page reloads in 25 s.';
+    setTimeout(()=>location.reload(),25000);
+   }else{
+    $('otas').textContent+=' Reconnect after the restart.';
+   }
+  }
+  fwBusy=0;
+ };
+ x.onerror=()=>{
+  fwBusy=0;
+  $('otas').textContent='Upload failed (connection lost)';
+ };
+ x.onabort=()=>{
+  fwBusy=0;
+  $('otas').textContent='Upload cancelled';
+ };
+ x.send(fd);
+}
 
 // ---------- boot
+
 genDays();
-[['t-pray','pray'],['t-set','set'],['t-loc','loc']].forEach(([id,k])=>$(id).addEventListener('input',e=>{
- if(!['cq','bright','savecity'].includes(e.target.id))dirty[k]=1}));
-if(ONBOARD){MODE='wifi';conn('WiFi: '+location.host,1);modeUi();auth()}
-else{let ip=localStorage.getItem('ip');if(ip)$('ip').value=ip;modeUi();
- conn(navigator.bluetooth?'Not connected - press Connect Bluetooth':'This browser has no Web Bluetooth (use Chrome / Edge, or Bluefy on iPhone)')}
+[
+ ['t-pray','pray'],
+ ['t-set','set'],
+ ['t-loc','loc']
+].forEach(([id,k])=>$(id).addEventListener('input',e=>{
+ if(!['cq','bright','savecity'].includes(e.target.id))dirty[k]=1;
+}));
+
+if(ONBOARD){
+ MODE='wifi';
+ conn('WiFi: '+location.host,1);
+ modeUi();
+ auth();
+ // Browsers block Web Bluetooth on plain HTTP pages. The saved file can use both.
+ if(!navigator.bluetooth){
+  $('bbtn').textContent='⬇ Download page for Bluetooth + WiFi';
+  $('bbtn').onclick=()=>{
+   $('dlpage').click();
+   msg('Open the downloaded p4clock.html in Chrome or Edge to switch between Bluetooth and WiFi');
+  };
+ }
+}else{
+ let ip=prefGet('ip');
+ if(ip)$('ip').value=ip;
+ modeUi();
+ conn(navigator.bluetooth?
+  'Not connected - press Connect Bluetooth':
+  'Web Bluetooth is unavailable here. Use a supported browser and secure context.');
+}
+
+namePreview();
 setInterval(st,1000);
 </script></body></html>
