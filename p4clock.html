@@ -730,8 +730,11 @@ function wifiIp(){
   msg('Enter only the board IP address or hostname');
   return;
  }
+ // An HTTPS page cannot call the clock over HTTP, but it can open the clock's own page.
  if(location.protocol=='https:'){
-  msg('An HTTPS page may block plain HTTP WiFi access. Open http://'+ip+'/ directly.');
+  prefSet('ip',ip);
+  if(!window.open('http://'+ip+'/','_blank'))
+   msg('The browser blocked the new tab. Open http://'+ip+'/ directly.');
   return;
  }
  if(bDev&&bDev.gatt.connected){
