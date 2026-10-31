@@ -289,8 +289,10 @@ function wifiIp(){let ip=$('ip').value.trim().replace(/^https?:\/\//,'').replace
  if(wasBle){bManual=1;if(bDev&&bDev.gatt.connected)bDev.gatt.disconnect()}
  conn('WiFi: '+BASE,1);modeUi();auth()}
 // Over Bluetooth, show the board's WiFi IP in the box (empty when it is not on WiFi)
-function ipFill(){if(MODE!='ble')return;api('/api/wifi').then(d=>{
- if(document.activeElement!=$('ip'))$('ip').value=d.ip||''}).catch(()=>{})}
+// and remember it so it is still there after disconnecting or reopening the page
+function ipFill(){if(MODE!='ble')return;api('/api/wifi').then(d=>{let ip=d.ip||'';
+ if(ip)localStorage.setItem('ip',ip);else localStorage.removeItem('ip');
+ if(document.activeElement!=$('ip'))$('ip').value=ip}).catch(()=>{})}
 
 // ---------- Bluetooth
 let bDev=null,bRx=null,bTx=null,bBuf='',bId=0,bWait={},bQ=Promise.resolve(),bChunk=20,bDec=null,bManual=0,lastWifi=null;
