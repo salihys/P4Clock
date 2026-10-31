@@ -500,6 +500,9 @@ const TXU='6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 // Local development servers should not be mistaken for the clock itself.
 const LOOPBACK=['localhost','127.0.0.1','[::1]'].includes(location.hostname);
 const ONBOARD=location.protocol=='http:'&&!LOOPBACK;
+// Safari has no Web Bluetooth, so Web Bluetooth on an iPhone/iPad means Bluefy or similar.
+const IOSBLE=!!navigator.bluetooth&&(/iPhone|iPad|iPod/.test(navigator.userAgent)||
+ (navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1));
 const PN=['Fajr','Sunrise','Dhuhr','Sunset','Maghrib'];
 const AZPT=[0,2,4];
 const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -733,6 +736,12 @@ function wifiIp(){
  // An HTTPS page cannot call the clock over HTTP, but it can open the clock's own page.
  if(location.protocol=='https:'){
   prefSet('ip',ip);
+  if(IOSBLE){
+   // Bluefy will not load the clock's HTTP page. x-safari- is an unofficial iOS link type.
+   msg('If Safari does not open, go to http://'+ip+'/ in Safari');
+   location.href='x-safari-http://'+ip+'/';
+   return;
+  }
   if(!window.open('http://'+ip+'/','_blank'))
    msg('The browser blocked the new tab. Open http://'+ip+'/ directly.');
   return;
