@@ -265,7 +265,7 @@ function msg(t){$('msg').textContent=t;setTimeout(()=>{if($('msg').textContent==
 function conn(t,ok){$('cst').textContent=t;$('cst').className=ok?'ok':'dim'}
 function modeUi(){let b=MODE=='ble';
  $('bdis').classList.toggle('hide',!b);$('bbtn').classList.toggle('hide',b);
- $('iprow').classList.toggle('hide',ONBOARD||b);
+ $('iprow').classList.toggle('hide',ONBOARD);
  $('otacard').classList.toggle('hide',MODE!='wifi');$('concard').classList.toggle('hide',!b);
  $('mtcard').classList.toggle('hide',MODE!='wifi');$('wmaint').classList.toggle('hide',MODE!='wifi');   // [OTAWIN]
  if(MODE=='wifi')$('dlpage').href=BASE+'/p4clock.html'}
@@ -285,10 +285,15 @@ function login(){P=$('pin').value.trim();api('/api/auth').then(()=>{localStorage
 function logout(){localStorage.removeItem('pin');P='';lock('')}
 function wifiIp(){let ip=$('ip').value.trim().replace(/^https?:\/\//,'').replace(/\/+$/,'');if(!ip)return;
  if(location.protocol=='https:'){msg('WiFi does not work from an HTTPS page - open the saved file, or http://'+ip+'/');return}
- localStorage.setItem('ip',ip);BASE='http://'+ip;MODE='wifi';conn('WiFi: '+BASE,1);modeUi();auth()}
+ let wasBle=MODE=='ble';localStorage.setItem('ip',ip);BASE='http://'+ip;MODE='wifi';
+ if(wasBle){bManual=1;if(bDev&&bDev.gatt.connected)bDev.gatt.disconnect()}
+ conn('WiFi: '+BASE,1);modeUi();auth()}
+// Over Bluetooth, show the board's WiFi IP in the box (empty when it is not on WiFi)
+function ipFill(){if(MODE!='ble')return;api('/api/wifi').then(d=>{
+ if(document.activeElement!=$('ip'))$('ip').value=d.ip||''}).catch(()=>{})}
 
 // ---------- Bluetooth
-let bDev=null,bRx=null,bTx=null,bBuf='',bId=0,bWait={},bQ=Promise.resolve(),bChunk=20,bDec=null,bManual=0;
+let bDev=null,bRx=null,bTx=null,bBuf='',bId=0,bWait={},bQ=Promise.resolve(),bChunk=20,bDec=null,bManual=0,lastWifi=null;
 async function bleConnect(){
  if(!navigator.bluetooth){msg(ONBOARD?'Bluetooth does not work on this http page - System tab: download p4clock.html and open that file':
   'This browser has no Web Bluetooth - use Chrome / Edge, or Bluefy on iPhone');return}
@@ -339,7 +344,7 @@ function conSend(){let v=$('bcmd').value.trim();if(!v||MODE!='ble')return;$('bcm
  bQ=bQ.then(()=>bleWrite(v+'\n')).catch(()=>{})}
 
 // ---------- start + live status
-function start(){ready=1;fsDone=0;lastCfg=null;st();
+function start(){ready=1;fsDone=0;lastCfg=null;st();ipFill();
  loadSet().then(alist).then(list).catch(()=>{});
  let a=document.querySelector('.tab-pane.active');if(a)tabLoad(a.id)}
 function c(cmd,v){api('/api/cmd',v!==undefined?{c:cmd,v:v}:{c:cmd}).then(d=>{if(!d.ok&&d.err)msg(d.err);setTimeout(st,300)}).catch(()=>{})}
@@ -348,6 +353,7 @@ function bri(v){$('bv').textContent=v;clearTimeout(bt);bt=setTimeout(()=>api('/a
 function mark(){[...$('list').children].forEach((e,i)=>e.classList.toggle('on',i==cur))}
 function isTyping(){let ae=document.activeElement;return ae&&(ae.tagName=='INPUT'||ae.tagName=='TEXTAREA'||ae.tagName=='SELECT')}
 function applyStatus(d){lastSt=d;$('err').style.display='none';
+ if(d.wifi!=lastWifi){lastWifi=d.wifi;ipFill()}
  $('clock').textContent=(d.clock||'Board clock not set')+(d.date?'  \u2022  '+d.date:'')+(d.hijri?'  \u2022  '+d.hijri:'')+
   (d.bat>=0?'  \u2022  \uD83D\uDD0B'+d.bat+'%':'')+(d.wifi?'  \u2022  \uD83D\uDCF6 '+d.wifi:'');
  $('next').textContent=d.next?'Next: '+d.next:'';
