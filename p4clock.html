@@ -333,6 +333,15 @@ input[type=checkbox]{width:24px;height:24px;flex-shrink:0}
    <span>Clock screen auto-lock (0-600 s, 0 = off)</span>
    <input type="number" id="locksec" min="0" max="600">
   </div>
+  <div class="f">
+   <span>Clock picture all the time</span>
+   <input type="checkbox" id="clockbg">
+  </div>
+  <div class="dim">
+   Pictures: .bin files in /wallpaper (Files tab), same format as the azan pictures.
+   Random if there are several. After adding one, turn this off, save, then on and save.
+   The azan picture still shows during the azan, then this one returns.
+  </div>
   <div class="row">
    <button id="setsave" onclick="saveSet()">&#10004; Save settings</button>
   </div>
@@ -1226,6 +1235,7 @@ function loadSet(){
    $('bright').value=d.bright;
    $('bv').textContent=d.bright;
    if(d.locksec!=null)$('locksec').value=d.locksec;
+   $('clockbg').checked=!!d.clockbg;
    $('bname').value=d.bname||'';
   }
   $('bname').placeholder=d.defble||'P4-Clock';
@@ -1293,7 +1303,8 @@ function saveSet(){
   method:$('method').value,
   hijri:$('hijri').value,
   h24:$('h24').checked?1:0,
-  locksec:lock
+  locksec:lock,
+  clockbg:$('clockbg').checked?1:0
  },1).then(d=>{
   let changed=d.host&&oldHost&&d.host!==oldHost;
   let text=d.ok?'Settings saved':(d.err||'Save failed');
