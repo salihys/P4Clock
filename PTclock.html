@@ -25,6 +25,7 @@ button.sm{font-size:14px;padding:7px 10px;min-width:0}
 input,select{background:#0E1621;color:#E8EEF2;border:1px solid #37474F;border-radius:8px;padding:8px;font-size:16px;max-width:100%}
 input[type=range]{flex:1;height:32px;padding:0;border:0;background:none}
 input[type=checkbox]{width:24px;height:24px;flex-shrink:0}
+input:disabled{opacity:.5}
 .f{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}
 .f>span{min-width:0}
 .f input:not([type=checkbox]):not([type=range]),.f select{width:58%;min-width:0}
@@ -173,16 +174,16 @@ input[type=checkbox]{width:24px;height:24px;flex-shrink:0}
   <div class="f"><span>Azan volume (0-21)</span><input type="number" id="azvol" min="0" max="21"></div>
   <div class="f"><span>Start azan early (0-500 s)</span><input type="number" id="lead" min="0" max="500"></div>
   <div class="f">
-   <span>Fajr angle: method default <b id="fdef"></b></span>
-   <input type="checkbox" id="fdefcb" onchange="fShow()">
+   <span>Use method angles <b id="fdef"></b></span>
+   <input type="checkbox" id="fdefcb" onchange="fShow(1)">
   </div>
   <div class="f" id="frow">
-   <span>Custom Fajr angle (14.0 - 19.9)</span>
+   <span>Fajr angle (14.0 - 19.9)</span>
    <input id="fangle" inputmode="decimal">
   </div>
-  <div class="f">
-   <span>Maghrib = sunset + min (0-30)</span>
-   <input type="number" id="magh" min="0" max="30">
+  <div class="f" id="mrow">
+   <span>Maghrib angle (0.833 = sunset - 9.9)</span>
+   <input id="mangle" inputmode="decimal">
   </div>
   <div class="f">
    <span>Azan picture on the clock screen</span>
@@ -546,7 +547,7 @@ let cur=-1,keep0=1,ntz=0;
 let cwd='/',sel=null,selDir=0,clip=null,gq='',gt=0,wt=0,fsDone=0;
 let upStop=0,dlBusy=0,upBusy=0,fsz={};
 let rawAlarms=[],lastCfg=null,cfgBusy=0,setD=null,lastSt=null;
-let METH=[],MANG=[],TZS=[],dirty={},eIdx=-1,ptKey='';
+let METH=[],MANG=[],MMANG=[],CURM=0,TZS=[],dirty={},eIdx=-1,ptKey='';
 let mtGo=0;
 let connectionEpoch=0;
 let setSaving=0;
@@ -622,6 +623,7 @@ function resetConnectionData(){
  setD=null;
  METH=[];
  MANG=[];
+ MMANG=[];
  TZS=[];
  ntz=0;
  dirty={};
@@ -1223,7 +1225,16 @@ function tzShow(){
  $('tzlbl').textContent=v==ntz?'UTC offset (e.g. +3, -5:30)':'POSIX rule';
 }
 
-function fShow(){$('frow').style.display=$('fdefcb').checked?'none':''}
+// Angle text: 0.833 = sunset, else one decimal
+function angTxt(a){a=+a||0;return Math.abs(a-0.833)<0.0005?'0.833':a.toFixed(1)}
+// Fajr / Maghrib angles: greyed out with the method values while "Use method angles" is ticked,
+// editable (custom calculation) when it is not. user=1: the box was just clicked.
+function fShow(user){
+ let on=$('fdefcb').checked,f=$('fangle'),m=$('mangle');
+ f.disabled=on;m.disabled=on;
+ if(on){f.value=angTxt(MANG[CURM]);m.value=angTxt(MMANG[CURM])}
+ else if(user){f.value=angTxt(f.value);m.value=angTxt(m.value)}
+}
 
 function fillAz(s,fl,want,fb){
  s.innerHTML='';
@@ -1237,13 +1248,14 @@ function fillAz(s,fl,want,fb){
 
 function loadSet(){
  return api('/api/settings',setD?{lists:0}:{}).then(d=>{
-  if(d.methods){METH=d.methods;MANG=d.mang||[];TZS=d.tzs||[]}
+  if(d.methods){METH=d.methods;MANG=d.mang||[];MMANG=d.mmang||[];TZS=d.tzs||[]}
   setD=d;
   applyBoard(d);
   $('touch').classList.toggle('hide',d.tswap==null);
   let m=$('method');
   if(!m.options.length)METH.forEach((n,i)=>
-   m.add(new Option(n+'  (Fajr '+(+MANG[i]).toFixed(1)+')',i)));
+   m.add(new Option(n+'  ('+(+MANG[i]).toFixed(1)+' / '+
+    ((+MMANG[i]||0)<=0.834?'sunset':angTxt(MMANG[i]))+')',i)));
 
   let t=$('tzsel');
   ntz=TZS.length;
@@ -1277,28 +1289,30 @@ function loadSet(){
    $('lon').value=(+d.lon).toFixed(4);
   }
 
-  let def=+MANG[d.method]||0;
+  CURM=d.method;
+  let def=+MANG[d.method]||0,mdef=+MMANG[d.method]||0.833,cust=d.fangle>0;
+  let mcur=cust&&d.mangle>0?+d.mangle:mdef;
   if(!dirty.pray){
    (d.az||[]).forEach((v,i)=>$('az'+i).checked=v);
    $('azvol').value=d.azvol;
    $('lead').value=d.lead;
-   $('magh').value=d.magh;
    $('azbg').checked=!!d.azbg;
    fillAz($('azfile'),d.azfiles,d.azfile||'/azan/azan.mp3',0);
    fillAz($('azfajr'),d.azfiles,d.azfajr||'/azan/azan_fajr.mp3',
     Math.max(0,$('azfile').selectedIndex));
    fillAz($('azmag'),d.azfiles,d.azmag,Math.max(0,$('azfile').selectedIndex));
-   $('fdef').textContent='('+def.toFixed(1)+')';
-   $('fdefcb').checked=!(d.fangle>0);
-   $('fangle').value=(d.fangle>0?+d.fangle:def).toFixed(1);
+   $('fdef').textContent='('+def.toFixed(1)+' / '+angTxt(mdef)+')';
+   $('fdefcb').checked=!cust;
+   $('fangle').value=(cust?+d.fangle:def).toFixed(1);
+   $('mangle').value=angTxt(mcur);
    fShow();
   }
 
   $('loc').textContent='Now: '+d.city+'   '+(+d.lat).toFixed(4)+', '+
    (+d.lon).toFixed(4)+'   |   '+d.tz;
-  $('phdr').textContent=d.city+'  |  '+METH[d.method]+'  |  Fajr angle '+
-   (d.fangle>0?(+d.fangle).toFixed(1)+' (custom)':def.toFixed(1))+
-   '  |  Maghrib = sunset + '+d.magh+' min';
+  $('phdr').textContent=d.city+'  |  '+METH[d.method]+'  |  Fajr '+
+   (cust?+d.fangle:def).toFixed(1)+'  /  Maghrib '+(mcur<=0.834?'sunset':angTxt(mcur))+
+   (cust?'  (custom)':'');
 
   keep0=d.keep;
   $('wkeep').checked=d.keep;
@@ -1371,8 +1385,8 @@ function savePray(){
  let a={
   azvol:$('azvol').value,
   lead:$('lead').value,
-  magh:$('magh').value,
-  fangle:$('fdefcb').checked?0:$('fangle').value
+  fangle:$('fdefcb').checked?0:$('fangle').value,
+  mangle:$('fdefcb').checked?0:$('mangle').value
  };
  for(let i=0;i<3;i++)a['az'+i]=$('az'+i).checked?1:0;
  a.azbg=$('azbg').checked?1:0;
