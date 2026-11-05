@@ -448,6 +448,15 @@ input:disabled{opacity:.5}
    Lock this page to clear the current login.
   </div>
  </div>
+ <div class="card hide" id="mrcard">
+  <h2>&#127925; Media remote (tablet)</h2>
+  <div class="dim">
+   Videos, YouTube, music and folders on the tablet, controlled from this phone over Bluetooth.
+  </div>
+  <div class="row">
+   <button class="i" onclick="openMedia()">&#127925; Open media remote</button>
+  </div>
+ </div>
  <div class="card" id="otacard">
   <h2>&#11014; Firmware update (OTA, WiFi only)</h2>
   <div class="dim">
@@ -612,6 +621,8 @@ function applyBoard(d){
  $('dlpage').download=dlName;
  $('dlbtn').innerHTML='&#11015; Download '+dlName;
  $('vdcard').classList.toggle('hide',b!='P4');
+ // the Android tablet, and this page is open inside the Prayer Clock app: link to its Media remote screen
+ $('mrcard').classList.toggle('hide',!(b=='Android tablet'&&window.AndroidBle&&AndroidBle.openMediaRemote));
  modeUi();
 }
 
@@ -1542,6 +1553,10 @@ function mtBtns(on){
 }
 
 function mtText(t){$('mts').textContent=t;msg(t)}
+
+function openMedia(){
+ try{AndroidBle.openMediaRemote()}catch(e){msg('Open Media remote from the Prayer Clock app')}
+}
 
 function maint(){
  if(MODE!='wifi'){msg('Maintenance mode works over WiFi only');return}
