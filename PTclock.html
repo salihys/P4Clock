@@ -448,16 +448,57 @@ input:disabled{opacity:.5}
    Lock this page to clear the current login.
   </div>
  </div>
- <div class="card hide" id="mrcard">
-  <h2>&#127925; Media remote (tablet)</h2>
-  <div class="dim">
-   Videos, YouTube, music and folders on the tablet, controlled from this phone over Bluetooth.
-  </div>
+ <div class="card hide" id="oucard">
+  <h2>&#128260; Online update</h2>
+  <div id="ouCur" class="dim"></div>
+  <div id="ouMsg" style="margin-top:6px"></div>
+  <div id="ouNotes" class="dim" style="white-space:pre-wrap;margin-top:6px"></div>
+  <div class="bar hide" id="ouBar"><div id="ouFill" style="height:100%;width:0;background:#FFC107"></div></div>
   <div class="row">
-   <button class="i" onclick="openMedia()">&#127925; Open media remote</button>
+   <button id="ouChk" onclick="ouCheck()">&#8635; Check for updates</button>
+   <button class="o hide" id="ouUpd" onclick="ouUpdate()">&#11015; Install update</button>
+  </div>
+  <div class="dim" style="margin-top:8px">
+   The clock also checks by itself every day. If a new firmware fails to start, the clock goes back to the old one.
   </div>
  </div>
+ <div class="card hide" id="mrcard">
+  <h2>&#127925; Media remote (tablet)</h2>
+  <div id="mrTitle">Stopped</div>
+  <div id="mrTime" class="dim"></div>
+  <div class="row">
+   <button class="big" onclick="mr('prev')">&#9198;</button>
+   <button class="big" id="mrPP" onclick="mr('toggle')">&#9654;</button>
+   <button class="big" onclick="mr('next')">&#9197;</button>
+   <button class="big r" onclick="mr('stop')">&#9209;</button>
+  </div>
+  <div class="row">
+   <span>&#128264;</span>
+   <input type="range" id="mrVol" min="0" max="100" value="100" onchange="mr('vol',{v:this.value/100})">
+   <button class="sm g" id="mrFull" onclick="mr('full',{on:!mrFullOn})">Full screen</button>
+  </div>
+  <div class="row">
+   <button class="sm" onclick="mrLoad()">&#8635; Refresh lists</button>
+   <button class="sm g" onclick="mrFolders()">&#128193; Browse the tablet</button>
+   <button class="sm i hide" id="mrApp" onclick="openMedia()">Open in the app</button>
+  </div>
+  <div id="mrBrowse" class="lst"></div>
+  <h3>&#127916; Videos and music (PrayerClock folders)</h3>
+  <div id="mrFiles" class="lst"></div>
+  <h3>&#9654; YouTube</h3>
+  <div class="row" id="mrSearchRow">
+   <input id="mrQ" style="flex:1" placeholder="Search YouTube" onkeydown="if(event.key=='Enter')mrSearch()">
+   <button class="sm" onclick="mrSearch()">Search</button>
+  </div>
+  <div class="row">
+   <input id="mrLink" style="flex:1" placeholder="Paste a YouTube link" onkeydown="if(event.key=='Enter')mrPlayLink()">
+   <button class="sm" onclick="mrPlayLink()">Play</button>
+  </div>
+  <div id="mrRes" class="lst"></div>
+  <div id="mrYt" class="lst"></div>
+ </div>
  <div class="card" id="otacard">
+  <div id="otapart">
   <h2>&#11014; Firmware update (OTA, WiFi only)</h2>
   <div class="dim">
    PlatformIO: .pio/build/&lt;env&gt;/firmware.bin.
@@ -468,6 +509,7 @@ input:disabled{opacity:.5}
    <button class="o" onclick="ota()">Install</button>
   </div>
   <div id="otas" class="prog"></div>
+  </div>
   <h3>Offline Bluetooth page</h3>
   <div class="dim">
    Save this page to control the clock over Bluetooth without WiFi,
@@ -555,6 +597,8 @@ let MODE='',BASE='',P='',ready=0,busy=0,drag=0,vt=0,bt=0,et=0;
 let cur=-1,keep0=1,ntz=0;
 let cwd='/',sel=null,selDir=0,clip=null,gq='',gt=0,wt=0,fsDone=0;
 let upStop=0,dlBusy=0,upBusy=0,fsz={};
+let mrOn=0,mrDone=0,mrFullOn=false;     // media remote of the Android tablet (System tab)
+let ouT=0;                              // [OTAUPD] online update card: status refresh timer
 let rawAlarms=[],lastCfg=null,cfgBusy=0,setD=null,lastSt=null;
 let METH=[],MANG=[],MMANG=[],CURM=0,TZS=[],dirty={},eIdx=-1,ptKey='';
 let mtGo=0;
@@ -607,8 +651,9 @@ function modeUi(){
  $('iprow').classList.toggle('hide',ONBOARD);
  $('otacard').classList.toggle('hide',MODE!='wifi');
  $('concard').classList.toggle('hide',!b);
- $('mtcard').classList.toggle('hide',MODE!='wifi');
- $('wmaint').classList.toggle('hide',MODE!='wifi');
+ $('wmaint').classList.toggle('hide',MODE!='wifi'||mrOn);
+ $('mtcard').classList.toggle('hide',MODE!='wifi'||mrOn);   // the tablet has no maintenance mode / firmware
+ $('otapart').classList.toggle('hide',mrOn);
  if(MODE=='wifi')$('dlpage').href=BASE+'/'+dlName;
 }
 
@@ -621,14 +666,21 @@ function applyBoard(d){
  $('dlpage').download=dlName;
  $('dlbtn').innerHTML='&#11015; Download '+dlName;
  $('vdcard').classList.toggle('hide',b!='P4');
- // the Android tablet, and this page is open inside the Prayer Clock app: link to its Media remote screen
- $('mrcard').classList.toggle('hide',!(b=='Android tablet'&&window.AndroidBle&&AndroidBle.openMediaRemote));
+ // the Android tablet: its media remote (videos, YouTube, folders); inside the Prayer Clock app also a link
+ // to the app's own Media remote screen
+ mrOn=b=='Android tablet';
+ $('mrcard').classList.toggle('hide',!mrOn);
+ $('mrApp').classList.toggle('hide',!(mrOn&&window.AndroidBle&&AndroidBle.openMediaRemote));
+ if(mrOn&&!mrDone&&$('t-sys').classList.contains('active')){mrDone=1;mrLoad()}
  modeUi();
 }
 
 function resetConnectionData(){
  connectionEpoch++;
  ready=0;
+ mrDone=0;
+ clearTimeout(ouT);
+ $('oucard').classList.add('hide');
  lastCfg=null;
  lastSt=null;
  setD=null;
@@ -1219,6 +1271,8 @@ function tabLoad(id){
  if(!ready||upBusy||dlBusy||fwBusy)return;
  if(id=='t-files'&&!fsDone){fsDone=1;fsl(cwd);fsinfo()}
  if(id=='t-wifi')wfGet();
+ if(id=='t-sys'&&mrOn&&!mrDone){mrDone=1;mrLoad()}
+ if(id=='t-sys')ouGet();
 }
 
 function openFilesTab(p){
@@ -1554,9 +1608,118 @@ function mtBtns(on){
 
 function mtText(t){$('mts').textContent=t;msg(t)}
 
+// ---- [OTAUPD] online update: /api/ota/status, check, update (firmware S3 1.3.0 / P4 1.4.0 and newer;
+// older firmware answers "not found" and the card stays hidden; the tablet has no firmware)
+const OU_BUSY=['checking','downloading','verifying','restarting'];
+function ouShow(d){
+ if(mrOn)return;
+ $('oucard').classList.remove('hide');
+ $('ouCur').textContent='This clock: firmware '+d.cur+' ('+d.board+')';
+ $('ouMsg').textContent=d.msg||'';
+ $('ouNotes').textContent=d.new&&d.notes?d.notes:'';
+ let dl=d.state=='downloading'||d.state=='verifying'||d.state=='restarting';
+ $('ouBar').classList.toggle('hide',!dl);
+ $('ouFill').style.width=(dl&&d.progress>0?d.progress:0)+'%';
+ let canUpd=d.state=='available'||(d.state=='updatefailed'&&!!d.new);
+ $('ouUpd').classList.toggle('hide',!canUpd);
+ if(d.new)$('ouUpd').innerHTML='&#11015; Install '+d.new;
+ let busy=OU_BUSY.indexOf(d.state)>=0;
+ $('ouChk').disabled=busy;
+ clearTimeout(ouT);
+ if(busy)ouT=setTimeout(ouGet,1500);
+}
+function ouGet(){
+ if(!ready||mrOn)return;
+ api('/api/ota/status').then(d=>{if(d&&d.state)ouShow(d)}).catch(()=>{});
+}
+function ouCheck(){
+ if(!ready){msg('Unlock and connect first');return}
+ api('/api/ota/check',{},1).then(d=>{if(!d.ok&&d.err)msg(d.err);ouGet()}).catch(()=>{});
+}
+function ouUpdate(){
+ if(!confirm('Install the update now?\nThe clock restarts when it is done (about a minute). Settings and SD card files are kept.'))return;
+ api('/api/ota/update',{},1).then(d=>{if(!d.ok&&d.err)msg(d.err);ouGet()}).catch(()=>{});
+}
+
 function openMedia(){
  try{AndroidBle.openMediaRemote()}catch(e){msg('Open Media remote from the Prayer Clock app')}
 }
+
+// ---- Media remote of the Android tablet (System tab): /api/media = the Bluetooth media remote's commands
+function mrItem(t,fn){
+ let d=document.createElement('div'),s=document.createElement('span');
+ d.className='it';s.textContent=t;if(fn)s.onclick=fn;d.appendChild(s);return d;
+}
+function mrFill(id,items){let b=$(id);b.innerHTML='';items.forEach(x=>b.appendChild(x))}
+function mrIcon(x){return x.video?'\u{1F3AC} ':'♪ '}
+function mrApi(a){
+ return api('/api/media',a).then(d=>{
+  if(d.t=='msg'&&d.text)msg(d.text);
+  else if(!d.ok&&d.err)msg(d.err);
+  if(d.t=='state')mrState(d);
+  return d;
+ });
+}
+function mr(cmd,a){
+ if(!ready){msg('Unlock and connect first');return}
+ mrApi(Object.assign({c:cmd},a||{})).then(()=>setTimeout(mrPoll,1000)).catch(()=>{});
+}
+function mrTm(ms){let s=Math.floor((ms||0)/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function mrState(s){
+ $('mrTitle').textContent=s.kind=='none'?'Stopped':(s.kind=='yt'?'YouTube: ':'')+(s.title||'');
+ $('mrTime').textContent=s.kind=='none'?'':(s.kind=='file'&&s.dur?mrTm(s.pos)+' / '+mrTm(s.dur)+'   ':'')+(s.playing?'Playing':'Paused');
+ $('mrPP').innerHTML=s.playing?'&#9208;':'&#9654;';
+ if(document.activeElement!=$('mrVol'))$('mrVol').value=Math.round((s.vol||0)*100);
+ mrFullOn=!!s.full;
+ $('mrFull').textContent=mrFullOn?'Exit full screen':'Full screen';
+ document.querySelectorAll('#mrFiles .it').forEach((e,i)=>e.classList.toggle('on',s.kind=='file'&&s.i==i));
+ document.querySelectorAll('#mrYt .it').forEach((e,i)=>e.classList.toggle('on',s.kind=='yt'&&s.i==i));
+}
+function mrLoad(){
+ if(!ready||!mrOn)return;
+ mrApi({c:'list'}).then(d=>{
+  let f=d.files||[],y=d.yt||[];
+  mrFill('mrFiles',f.length?f.map((x,i)=>mrItem(mrIcon(x)+x.title,()=>mr('file',{i:i})))
+   :[mrItem('(nothing in PrayerClock/music and videos)')]);
+  mrFill('mrYt',y.map((x,i)=>mrItem('▶ '+x.title,()=>mr('yt',{i:i}))));
+  $('mrSearchRow').classList.toggle('hide',!d.ytkey);
+  if(d.state)mrState(d.state);
+ }).catch(()=>{});
+}
+function mrFolders(){
+ if(!ready){msg('Unlock and connect first');return}
+ mrApi({c:'folders'}).then(d=>{
+  if(d.t!='folders')return;
+  mrFill('mrBrowse',[mrItem('✖ Close',()=>{$('mrBrowse').innerHTML=''})]
+   .concat(d.list.map(x=>mrItem('\u{1F4C1} '+x.name+' ('+x.n+')',()=>mrBrowse(x.name)))));
+ }).catch(()=>{});
+}
+function mrBrowse(f){
+ mrApi({c:'browse',folder:f}).then(d=>{
+  if(d.t!='browse')return;
+  mrFill('mrBrowse',[mrItem('← Folders',mrFolders)]
+   .concat(d.files.map((x,i)=>mrItem(mrIcon(x)+x.title,()=>mr('pick',{i:i})))));
+ }).catch(()=>{});
+}
+function mrSearch(){
+ let q=$('mrQ').value.trim();
+ if(!q||!ready)return;
+ $('mrRes').innerHTML='<div class="dim">Searching...</div>';
+ mrApi({c:'ytsearch',q:q}).then(d=>{
+  if(d.err){$('mrRes').innerHTML='';msg(d.err);return}
+  mrFill('mrRes',(d.list||[]).map(x=>mrItem((x.pl?'\u{1F4C3} ':'▶ ')+x.title+(x.ch?' - '+x.ch:'')+(x.dur?' ('+x.dur+')':''),
+   ()=>{mr('ytplay',{id:x.id,title:x.title,pl:x.pl});setTimeout(mrLoad,2000)})));
+ }).catch(()=>{$('mrRes').innerHTML=''});
+}
+function mrPlayLink(){
+ let u=$('mrLink').value.trim();
+ if(!u)return;
+ mr('link',{url:u});
+ $('mrLink').value='';
+ setTimeout(mrLoad,2500);
+}
+function mrPoll(){if(mrOn&&ready)mrApi({c:'state'}).catch(()=>{})}
+setInterval(()=>{if(mrOn&&ready&&$('t-sys').classList.contains('active'))mrPoll()},2000);
 
 function maint(){
  if(MODE!='wifi'){msg('Maintenance mode works over WiFi only');return}
