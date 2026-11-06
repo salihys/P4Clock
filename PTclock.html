@@ -2224,6 +2224,11 @@ async function upl(files){
  let dir=cwd,tot=files.reduce((s,x)=>s+x.size,0);
  if(MODE=='ble'&&tot>1048576&&!confirm(
   'Bluetooth transfer speed varies. Upload '+sz(tot)+' over Bluetooth?'))return;
+ // [BIGUP] big files: maintenance mode (clock paused, Bluetooth off) is faster and more reliable
+ if(MODE=='wifi'&&ONBOARD&&!mrOn&&files.some(x=>x.size>BIG_UP)&&confirm(
+  'Big file ('+sz(Math.max(...files.map(x=>x.size)))+'). Upload in maintenance mode?\n'+
+  'Faster and more reliable: the clock pauses (no azan / alarms) for the upload, then restarts normally.\n'+
+  'Cancel = upload in normal mode (slower).')){await maintUpload(files,dir);return}
  upBusy=1;
  upStop=0;
  clearTimeout(wt);
@@ -2246,6 +2251,87 @@ async function upl(files){
   list().catch(()=>{});
   st();
   if($('t-wifi').classList.contains('active'))wfGet();
+ }
+}
+
+// [BIGUP] restart in maintenance mode, upload there (/upload-sd), restart normally, reload this page
+const BIG_UP=20*1024*1024;
+async function maintUpload(files,dir){
+ const sleep=ms=>new Promise(r=>setTimeout(r,ms)), pin=P;
+ upBusy=1;upStop=0;
+ $('upc').classList.remove('hide');
+ let done=0;
+ try{
+  $('up').textContent='Restarting the clock in maintenance mode ...';
+  let d=await api('/api/maint',{},1);
+  if(!d.ok)throw new Error(d.err||'maintenance mode refused');
+  await sleep(4000);
+  // only the maintenance page has this title (the normal page also mentions "Maintenance mode")
+  let up=0,normal=0,raw=0;
+  for(let t=0;t<45&&!upStop&&!up&&!normal;t++){        // up to about 90 s
+   try{
+    let r=await fetch('/?mt='+Date.now(),{cache:'no-store'}),tx=await r.text();
+    if(tx.indexOf('Prayer Clock - Maintenance mode')>=0){up=1;raw=tx.indexOf('<!--put-sd-->')>=0}
+    else if(t>=4&&tx.indexOf('class="tabs"')>=0)normal=1;   // restarted as the normal clock
+   }catch(e){}
+   if(!up&&!normal){$('up').textContent='Waiting for maintenance mode ... '+(t*2)+' s';await sleep(2000)}
+  }
+  if(upStop)throw new Error('Upload cancelled');
+  if(normal)throw new Error('the clock came back in normal mode - maintenance mode could not start (WiFi?). Nothing was uploaded.');
+  if(!up)throw new Error('the clock did not answer in maintenance mode - open this page again in a minute');
+  // raw upload (/put-sd, fast) when the maintenance page says it has it (<!--put-sd-->); older firmware
+  // only has the form upload (/upload-sd)
+  const q='?dir='+encodeURIComponent(dir)+'&pin='+encodeURIComponent(pin);
+  // raw step 1: PIN, folder and name; resume=1 keeps <name>.part and the clock answers its size
+  const begin=async(fl,resume)=>{
+   let r=await fetch('/put-begin'+q+'&name='+encodeURIComponent(fl.name)+(resume?'&resume=1':''),{method:'POST'});
+   let tx=await r.text();
+   if(r.status!=200)throw new Error(fl.name+': '+(tx||('HTTP '+r.status)));
+   let have=parseInt(tx,10);
+   return have>0&&have<fl.size?have:0;
+  };
+  const send1=(fl,i,have)=>new Promise((res,rej)=>{
+   let x=new XMLHttpRequest(),t0=Date.now();
+   upX=x;
+   if(raw){x.open('POST','/put-sd');x.setRequestHeader('Content-Type','application/octet-stream')}
+   else x.open('POST','/upload-sd'+q);
+   x.upload.onprogress=e=>{
+    let kb=e.loaded/1024/Math.max(.1,(Date.now()-t0)/1000);
+    let pct=fl.size?Math.round((have+e.loaded)*100/fl.size):0;
+    $('up').textContent='Maintenance mode: uploading '+fl.name+'  '+pct+'%  ('+kb.toFixed(0)+' KB/s, '+(i+1)+' of '+files.length+')';
+   };
+   x.onload=()=>{upX=null;if(x.status==200)res(200);else if(raw&&x.status==404)res(404);
+    else rej(new Error(fl.name+': '+(x.responseText||('HTTP '+x.status))))};
+   x.onerror=()=>{upX=null;rej(new Error('Upload failed: '+fl.name))};
+   x.onabort=()=>{upX=null;upStop=1;rej(new Error('Upload cancelled'))};
+   if(raw)x.send(have?fl.slice(have):fl);else{let fd=new FormData();fd.append('f',fl,fl.name);x.send(fd)}
+  });
+  const TRIES=6;                                       // a WiFi dropout: wait, ask how much arrived, send the rest
+  for(let i=0;i<files.length&&!upStop;i++){
+   let fl=files[i];
+   for(let a=1;a<=TRIES&&!upStop;a++){
+    try{
+     let have=raw?await begin(fl,a>1):0;
+     if(await send1(fl,i,have)==404){raw=0;await send1(fl,i,0)}
+     break;
+    }catch(e){
+     if(upStop||!raw||a==TRIES)throw e;
+     for(let s=8;s>0&&!upStop;s--){
+      $('up').textContent='Connection lost - resuming '+fl.name+' in '+s+' s (try '+(a+1)+' of '+TRIES+')';
+      await sleep(1000);
+     }
+    }
+   }
+  }
+  done=!upStop;
+ }catch(e){
+  msg('Upload stopped: '+(e.message||e));
+ }finally{
+  upX=null;
+  try{await fetch('/normal',{method:'POST'})}catch(e){}
+  $('up').textContent=(done?'Uploaded. ':'')+'Restarting the clock normally - this page reloads in 25 s';
+  if(done)msg('Uploaded in maintenance mode');
+  setTimeout(()=>location.reload(),25000);
  }
 }
 
