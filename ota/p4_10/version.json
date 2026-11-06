@@ -1,7 +1,7 @@
 {
   "board": "p4_10",
-  "version": "1.4.1",
-  "url": "https://github.com/salihys/PTclock/releases/download/p4_10-v1.4.1/firmware-p4_10-1.4.1.bin",
-  "sha256": "5397aff26151c58fa1699ce19fff7e8663c3002e53c9eb445efdaa636d998872",
-  "notes": "Test Update"
+  "version": "1.4.2",
+  "url": "https://github.com/salihys/PTclock/releases/download/p4_10-v1.4.2/firmware-p4_10-1.4.2.bin",
+  "sha256": "ab1fb0019fd449f95f6b32545587f848c95832f948d1744fd2ec4ab033a88796",
+  "notes": "More reliable online updates"
 }
