@@ -1,7 +1,7 @@
 {
   "board": "p4_10",
-  "version": "1.4.2",
-  "url": "https://github.com/salihys/PTclock/releases/download/p4_10-v1.4.2/firmware-p4_10-1.4.2.bin",
-  "sha256": "ab1fb0019fd449f95f6b32545587f848c95832f948d1744fd2ec4ab033a88796",
-  "notes": "More reliable online updates"
+  "version": "1.4.3",
+  "url": "https://github.com/salihys/PTclock/releases/download/p4_10-v1.4.3/firmware-p4_10-1.4.3.bin",
+  "sha256": "30bb54b797417f32ffbf8282dd42a8905532f79e835c7dd4297adf291c1bc90c",
+  "notes": "Uploads no longer restart the clock; big files via maintenance mode"
 }
