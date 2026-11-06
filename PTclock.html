@@ -461,6 +461,15 @@ input:disabled{opacity:.5}
   <div class="dim" style="margin-top:8px">
    The clock also checks by itself every day. If a new firmware fails to start, the clock goes back to the old one.
   </div>
+  <h3>Update server</h3>
+  <div class="dim">Where the version.json files are (https). The clock adds <span id="ouBoard">&lt;board&gt;</span>/version.json.</div>
+  <div class="row">
+   <input id="ouBase" style="flex:1" placeholder="https://..." onkeydown="if(event.key=='Enter')ouSaveBase()">
+  </div>
+  <div class="row">
+   <button class="sm" onclick="ouSaveBase()">&#128190; Save server</button>
+   <button class="sm g" onclick="ouSaveBase(1)">Default</button>
+  </div>
  </div>
  <div class="card hide" id="mrcard">
   <h2>&#127925; Media remote (tablet)</h2>
@@ -1625,6 +1634,9 @@ function ouShow(d){
  if(d.new)$('ouUpd').innerHTML='&#11015; Install '+d.new;
  let busy=OU_BUSY.indexOf(d.state)>=0;
  $('ouChk').disabled=busy;
+ $('ouBoard').textContent=d.board||'<board>';
+ if(d.base!==undefined&&document.activeElement!=$('ouBase'))$('ouBase').value=d.base;
+ $('ouBase').title=d.defbase?'Default: '+d.defbase:'';
  clearTimeout(ouT);
  if(busy)ouT=setTimeout(ouGet,1500);
 }
@@ -1635,6 +1647,17 @@ function ouGet(){
 function ouCheck(){
  if(!ready){msg('Unlock and connect first');return}
  api('/api/ota/check',{},1).then(d=>{if(!d.ok&&d.err)msg(d.err);ouGet()}).catch(()=>{});
+}
+// update server address, saved on the clock (NVS); def = back to the address built into the firmware
+function ouSaveBase(def){
+ if(!ready){msg('Unlock and connect first');return}
+ let u=def?'':$('ouBase').value.trim();
+ if(!def&&!/^https:\/\/\S+$/.test(u)){msg('The server address must start with https://');return}
+ api('/api/ota/base',{url:u},1).then(d=>{
+  msg(d.ok?(d.msg||'Saved'):d.err);
+  if(d.ok&&d.base!==undefined)$('ouBase').value=d.base;
+  ouGet();
+ }).catch(()=>{});
 }
 function ouUpdate(){
  if(!confirm('Install the update now?\nThe clock restarts when it is done (about a minute). Settings and SD card files are kept.'))return;
