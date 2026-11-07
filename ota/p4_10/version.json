@@ -1,7 +1,7 @@
 {
   "board": "p4_10",
-  "version": "1.4.5",
-  "url": "https://github.com/salihys/PTclock/releases/download/p4_10-v1.4.5/firmware-p4_10-1.4.5.bin",
-  "sha256": "510a1d0a639c556fd905ca4f1dbeba480f5d0f91562bb83bbdf661a0f0a20f30",
+  "version": "1.4.6",
+  "url": "https://github.com/salihys/PTclock/releases/download/p4_10-v1.4.6/firmware-p4_10-1.4.6.bin",
+  "sha256": "f0a9239acfb7ba981142651e7c629815a6aba5461ec0fc638b13ce635c1c78a1",
   "notes": "Alarm sound browser"
 }
